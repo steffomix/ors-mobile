@@ -1,50 +1,44 @@
-<html>
+<html ng-app="openRentstockApp">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>jQuery Mobile: Theme Download</title>
-  <link href="assets/css/bootstrap.css" rel="stylesheet">
-  <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
 
- 
   <script>
-	// takeover console errors to alert syntax errors
+	// wrap console errors to alert()
 	window.onerror = function(msg, url, linenumber) {
-    alert('Error message: '+unescape(unescape(msg))+'\nURL: '+url+'\nLine Number: '+linenumber);
-    return true;
-}
-    </script>
+    	alert('Error message: '+unescape(unescape(msg))+'\nURL: '+url+'\nLine Number: '+linenumber);
+    	return true;
+	}
+  </script>
   <!-- jquery lib -->
   <script src="assets/js/jquery.js"></script>
-  <script src="assets/js/bootstrap-transition.js"></script>
-  <script src="assets/js/bootstrap-alert.js"></script>
-  <script src="assets/js/bootstrap-modal.js"></script>
-  <script src="assets/js/bootstrap-dropdown.js"></script>
-  <script src="assets/js/bootstrap-scrollspy.js"></script>
-  <script src="assets/js/bootstrap-tab.js"></script>
-  <script src="assets/js/bootstrap-tooltip.js"></script>
-  <script src="assets/js/bootstrap-popover.js"></script>
-  <script src="assets/js/bootstrap-button.js"></script>
-  <script src="assets/js/bootstrap-collapse.js"></script>
-  <script src="assets/js/bootstrap-carousel.js"></script>
-  <script src="assets/js/bootstrap-typeahead.js"></script>
   
   <!-- angular lib -->
   <script src="assets/js/angular.min.js"></script>
   <script src="assets/js/angular-route.js"></script>
+  
+  <!-- twitter-bootstrap lib for angularjs -->
+  <script src="assets/js/ui-bootstrap.min.js"></script>
+  <script src="assets/js/ui-bootstrap-tpls.min.js"></script>
   
   <!-- angular components -->
   <script src="components/topnav/topnav.js"></script>
   
   <!-- angular views -->
   <script src="views/home/home.js"></script>
+  <script src="views/projects/projects.js"></script>
   
   <!-- angular run -->
   <script src="bootstrap.js"></script>
   
 </head>
-  <body ng-app="openRentstockApp">
+  <body>
+
   <div ng-include="'components/topnav/topnav.html'" ></div>
+  
   <div class="container" ng-view></div>
   
   <!-- android console hack -->
@@ -60,6 +54,7 @@
 			};
 		});
 	})();
+	console.log('test');
     </script>
   </div>
   
