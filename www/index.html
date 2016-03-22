@@ -1,27 +1,20 @@
 <html>
 <head>
-	<meta charset="utf-8">
-	<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
-	<title>jQuery Mobile: Theme Download</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery Mobile: Theme Download</title>
   <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
   <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-  <script src="assets/js/angular.min.js"></script>
-  <script src="bootstrap.js"></script>
-	
-	
-	
-</head>
-<body ng-app="openRentstockApp">
-  <div ng-include="'views/topnav/topnav.html'"></div>
-  <div class="container"></div>
-	
-	
 
+ 
+  <script>
+	// takeover console errors to alert syntax errors
+	window.onerror = function(msg, url, linenumber) {
+    alert('Error message: '+unescape(unescape(msg))+'\nURL: '+url+'\nLine Number: '+linenumber);
+    return true;
+}
+    </script>
+  <!-- jquery lib -->
   <script src="assets/js/jquery.js"></script>
   <script src="assets/js/bootstrap-transition.js"></script>
   <script src="assets/js/bootstrap-alert.js"></script>
@@ -36,25 +29,39 @@
   <script src="assets/js/bootstrap-carousel.js"></script>
   <script src="assets/js/bootstrap-typeahead.js"></script>
   
-  <div id="console"></div>
-  <script src="assets/js/var-dump.js"></script>
-  <script>
-	
+  <!-- angular lib -->
+  <script src="assets/js/angular.min.js"></script>
+  <script src="assets/js/angular-route.js"></script>
+  
+  <!-- angular components -->
+  <script src="components/topnav/topnav.js"></script>
+  
+  <!-- angular views -->
+  <script src="views/home/home.js"></script>
+  
+  <!-- angular run -->
+  <script src="bootstrap.js"></script>
+  
+</head>
+  <body ng-app="openRentstockApp">
+  <div ng-include="'components/topnav/topnav.html'" ></div>
+  <div class="container" ng-view></div>
+  
+  <!-- android console hack -->
+  <div id="console">
+    <script>
 	// takeover console and output to #console
 	(function (){
+	
     	var c = window.console, n = $("#console");
-    	if (!c) return;
-		
 		['log', 'info', 'warn', 'error', 'debug', 'trace', 'assert'].forEach(function(f){
 			c[f] = function(msg){
-				n.append('<p><b>'+f+':</b> '+msg+'</p>');
+				n.append('<p><b>'+f+':</b> '+unescape(msg.replace('\n', '<br>').replace(' ', '&nbsp;'))+'</p>');
 			};
 		});
 	})();
-	
-	// short wrapper to var_dump
-	_ = my_dump;
-	
-  </script>
+    </script>
+  </div>
+  
 </body>
 </html>
