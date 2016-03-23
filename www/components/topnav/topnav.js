@@ -1,4 +1,4 @@
-angular.module('topnav', [])
+angular.module('topnavComponent', [])
 .controller('topnavCtrl', function($scope){
 	$scope.title = 'Home';
 });

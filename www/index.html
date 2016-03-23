@@ -30,6 +30,8 @@
   <!-- angular views -->
   <script src="views/home/home.js"></script>
   <script src="views/projects/projects.js"></script>
+  <script src="views/articles/articles.js"></script>
+  <script src="views/bookings/bookings.js"></script>
   
   <!-- angular run -->
   <script src="bootstrap.js"></script>
@@ -46,15 +48,13 @@
     <script>
 	// takeover console and output to #console
 	(function (){
-	
-    	var c = window.console, n = $("#console");
+    	var c = window.console, n = $("#console"), i = 1;
 		['log', 'info', 'warn', 'error', 'debug', 'trace', 'assert'].forEach(function(f){
 			c[f] = function(msg){
-				n.append('<p><b>'+f+':</b> '+unescape(msg.replace('\n', '<br>').replace(' ', '&nbsp;'))+'</p>');
+				n.html('<p><b>['+(i++)+'] '+f+':</b> '+unescape(msg.replace('\n', '<br>').replace(' ', '&nbsp;'))+'</p>'+n.html());
 			};
 		});
 	})();
-	console.log('test');
     </script>
   </div>
   
