@@ -1,12 +1,5 @@
-angular.module('projectsViewModule', 
-[
-	//'projectDataProvider'
-]).
-controller('projectsViewCtrl', ['$scope', 'projectDataProvider', function(scope, pdp){
-	scope.projects = pdp.projects;
-}]);
-/*.
-factory('projectDataProvider', ['$http', function($http){
+angular.module('projectsViewModule').
+	factory('projectDataProvider', ['$http', function($http){
 
 		var baseUrl = 'projects.json', 
 		projects = [], 
@@ -72,9 +65,4 @@ factory('projectDataProvider', ['$http', function($http){
 		return instance;
 
 	}]);
-
-
-*/
-
-
 

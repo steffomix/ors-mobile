@@ -24,16 +24,21 @@
   <script src="assets/js/ui-bootstrap.min.js"></script>
   <script src="assets/js/ui-bootstrap-tpls.min.js"></script>
   
+  <!-- angular services -->
+  
   <!-- angular components -->
   <script src="components/topnav/topnav.js"></script>
   
   <!-- angular views -->
   <script src="views/home/home.js"></script>
+  
   <script src="views/projects/projects.js"></script>
+  <script src="views/projects/projectDataProvider.js"></script>
+  <script src="views/manageProject/manageProject.js"></script>
   <script src="views/articles/articles.js"></script>
   <script src="views/bookings/bookings.js"></script>
   
-  <!-- angular run -->
+  <!-- angular init app module -->
   <script src="bootstrap.js"></script>
   
 </head>
@@ -44,19 +49,28 @@
   <div class="container" ng-view></div>
   
   <!-- android console hack -->
+<div>
+  <br>
+  <h2>Console</h2>
   <div id="console">
+	
     <script>
 	// takeover console and output to #console
 	(function (){
-    	var c = window.console, n = $("#console"), i = 1;
+    	var c = window.console, n = $("#console"), i = 0;
 		['log', 'info', 'warn', 'error', 'debug', 'trace', 'assert'].forEach(function(f){
 			c[f] = function(msg){
-				n.html('<p><b>['+(i++)+'] '+f+':</b> '+unescape(msg.replace('\n', '<br>').replace(' ', '&nbsp;'))+'</p>'+n.html());
+				n.html('<p><b>['+(i++)+'] '+f+':</b> '
+				+((typeof msg === 'string' || msg instanceof String) 
+					? unescape(msg.split('\n').join('<br>'))
+					: angular.toJson({console: msg}))+'</p>'
+				+n.html());
 			};
 		});
 	})();
     </script>
   </div>
+</div>
   
 </body>
 </html>

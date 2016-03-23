@@ -1,4 +1,22 @@
 <div>
   <h1>{{title}}</h1>
   
+  <table class="table">
+	<tr>
+	  <th>id</th>
+	  <th>name</th>
+	  <th>start</th>
+	  <th>end</th>
+	</tr>
+	<tbody ng-repeat="p in projects">
+	<tr>
+	  <td>a{{p.id}}</td>
+	  <td>{{p.name}}</td>
+	  <td>{{p.start}}</td>
+	  <td>{{p.end}}</td>
+	</tr>
+	</tbody>
+  </table>
+  
+  
 </div>
