@@ -1,80 +1,37 @@
-angular.module('projectsViewModule', 
-[
-	//'projectDataProvider'
-]).
-controller('projectsViewCtrl', ['$scope', 'projectDataProvider', function(scope, pdp){
-	scope.projects = pdp.projects;
-}]);
-/*.
-factory('projectDataProvider', ['$http', function($http){
+angular.module('orsProjectModule').
+controller('projectsViewCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
+		
+		var dataUrl = 'projects.json',
+			ipp = 25; // items per page
 
-		var baseUrl = 'projects.json', 
-		projects = [], 
-		ipp = 25; // items per page
-
+		$scope.projects = [];
+		
+		$scope.manageProject = function(id){
+			$location.path('manageProject/'+id);
+		};
+		
+		
 		function getInt(i){
 			return (isNaN(i) ? 1 : Math.abs(parseInt(i)));
 		};
 
-		var instance = {
-			
-			projects: projects,
 
-			page: function (page){
-				page = getInt(page); // todo
+		function page(page){
+			page = getInt(page); // todo
 
-				$http.get(baseUrl).then(
-				function(data){
-					console.log(data);
-					data.data.forEach(function(p){
-						projects.push(p);
-					});
+			$http.get(dataUrl).then(
+			function(data){
+				console.log(data.data);
 
-				},
-				function(e){
-					//console.error(e);
-				}
-				);
+				data.data.forEach(function(p){
+					$scope.projects.push(p);
+				});
 			},
-
-			getProject: function (id){
-				var project = false;
-				for(var i = 0; i < projects.length; i++){
-					if(projects[i].id == id){
-						project = projects[i];
-						break;
-					}
-				}
-				return project;
-			},
-			
-			updateProject: function(project){
-				
-			},
-			createProject: function(project){
-				
-			},
-			disableProject: function(id){
-				
-			},
-			enableProject: function(id){
-				
-			},
-			// 
-			registerListener: function(obj, fc){
-				listeners.push([obj, fc]);
-			},
-
-		};
-
-		instance.page(1);
-		
-		return instance;
-
+			function(e){
+				console.error(e);
+			}
+			);
+		}
+		page(1);
 	}]);
-
-
-*/
-
-
 

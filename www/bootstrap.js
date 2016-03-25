@@ -1,51 +1,85 @@
 
 (function(){
 
+	// lib modules
 	var modules = [
 		'ngRoute',
-		'ui.bootstrap',
+		//'ui.bootstrap',
 	];
 
-	var services = [].forEach(function(v){modules.push(v + 'Service');});
+	// app modules and dependecies
+	[
+		['orsProjectModule', ['ngRoute']],
+		['orsArticleModule', ['ngRoute']],
+		['orsBookingModule', ['ngRoute']],
+		// components
+		['topnavComponent', []]
+	].forEach(function(v){
+		angular.module(v[0], v[1]);
+		modules.push(v[0]);
+	});
 
-	var directives = [].forEach(function(v){modules.push(v + 'Directive');});
-
-// add components to modules
-	var components = [
-		'topnav'
+	// routes
+	routes = [
+		['projects', 'projects'],
+		['manageProject/:id', 'manageProject'],
+		['articles', 'articles'],
+		['bookings',  'bookings']
 	];
-	components.forEach(function(v){modules.push(v + 'Component');});
 
-// add views to modules
-	var views = [
-		'home',
-		'projects',
-		'manageProject',
-		'articles',
-		'bookings'
-	];
-	views.forEach(function(v){modules.push(v + 'ViewModule');});
-
-// init app
+	// init app
 	var app = angular.module('openRentstockApp', modules);
-
-// add routes
-	app.config(['$routeProvider',
-		function($routeProvider){
-			// route page load url
-			$routeProvider.when('/', {
-				templateUrl: 'views/home/home.html',
-				controller: 'homeViewCtrl'
+	
+	// set routes
+	app.config(function($routeProvider){
+		
+		// default and fallback route
+		$routeProvider.when('/',
+			{
+				templateUrl: 'views/home/home.html'
 			});
-			
-			// route views
-			views.forEach(function(id){
-				$routeProvider.when('/' + id, {
-					templateUrl: 'views/' + id + '/' + id + '.html',
-					controller: id + 'ViewCtrl'});
+		// other routes
+		routes.forEach(function(r){
+			$routeProvider.when('/' + r[0],
+			{
+				templateUrl: 'views/' + r[1] + '/' + r[1] + '.html'
 			}
 			);
-		}]);
+		});
+		// fallback
+		$routeProvider.otherwise({redirectTo: "/"});
+	});
 
+	app.controller('consoleCtrl', function($scope){
+		var i = 0;
+		
+		$scope.msg = [{
+				id: i++,
+				isLog: true,
+				msg: "test msg"
+			}];
+		
+		function addMsg(msg, isLog){
+			$scope.msg.unshift({
+				id: i++,
+				isLog: isLog,
+				msg: msg
+			}
+			);
+		}
+		
+		console.log =  function(msg){
+			addMsg(msg, true);
+			return true;
+		};
+		
+		console.error =  function(msg){
+			addMsg(msg, false);
+			return true;
+		};
+		
+	});
 })();
-  
+	
+	
+

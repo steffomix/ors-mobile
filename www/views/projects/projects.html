@@ -1,5 +1,5 @@
-<div>
-  <h1>{{title}}</h1>
+<div ng-controller="projectsViewCtrl">
+  <h1>Projects</h1>
   
   <table class="table">
 	<tr>
@@ -9,7 +9,7 @@
 	  <th>end</th>
 	</tr>
 	<tbody ng-repeat="p in projects">
-	<tr>
+	<tr ng-click="manageProject(p.id);">
 	  <td>a{{p.id}}</td>
 	  <td>{{p.name}}</td>
 	  <td>{{p.start}}</td>

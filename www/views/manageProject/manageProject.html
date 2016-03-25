@@ -1,4 +1,19 @@
-<div>
+<div ng-controller="manageProjectCtrl">
   <h1>Manage Projects</h1>
-  
+  <div class=""><div>
+	  <form class="form-group-lg"  name="projectForm" ng-submit="updateProject" novalidate>
+		<div ng-class="{'has-error': projectForm.chief.$invalid && !projectForm.chief.$pristine}">
+		  <label>Project Chief</label>
+		  <input type="text" name="chief" ng-model="project.name" class="form-control" required >
+		  <p class="help-block" ng-show="projectForm.chief.$invalid && !projectForm.chief.$pristine">
+			Name of Chief is required
+		  </p>
+		</div>
+		
+		<div class="form-group">
+		  <input type="text">
+		</div>
+		{{project | json}}
+	  </form>
+	</div></div>
 </div>

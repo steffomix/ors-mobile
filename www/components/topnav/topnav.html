@@ -1,17 +1,16 @@
 <div class="navbar navbar-inverse" ng-controller="topnavCtrl">
   <div class="navbar-inner" style="border-radius: 0px">
     <div class="container">
-	  <button class="btn btn-navbar" ng-init="isCollapsed = true" ng-click="isCollapsed = !isCollapsed"> 
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-	  </button> <a class="brand" href="#">{{title}}</a>
+	  <div class="btn-navbar" ng-init="isCollapsed = true" ng-click="isCollapsed = !isCollapsed"> 
+		<a class="brand" href="#/">{{title}}</a>
+	  </div> 
+	  
 	  <div class="nav-collapse" uib-collapse="isCollapsed">
 		<ul class="nav">
 		  <li><a href="#/home"><i class="icon-home icon-white"></i>Home</a></li>
 		  <li><a href="#/projects">Projects</a></li>
-		  <li><a href="#articles">Articles</a></li>
-		  <li><a href="#bookings">Bookings</a></li>
+		  <li><a href="#/articles">Articles</a></li>
+		  <li><a href="#/bookings">Bookings</a></li>
 		</ul>
 		<ul class="nav pull-right">
 		  <li><a href="#/class"><i class="icon-upload icon-white"></i> Upload/Save</a>
