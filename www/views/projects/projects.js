@@ -1,5 +1,5 @@
 angular.module('orsProjectModule').
-controller('projectsViewCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
+controller('projectsViewCtrl', ['$scope', 'orsDb', function($scope, db){
 		
 		var dataUrl = 'projects.json',
 			ipp = 25; // items per page
@@ -18,19 +18,17 @@ controller('projectsViewCtrl', ['$scope', '$http', '$location', function($scope,
 
 		function page(page){
 			page = getInt(page); // todo
-
-			$http.get(dataUrl).then(
-			function(data){
-				console.log(data.data);
-
-				data.data.forEach(function(p){
-					$scope.projects.push(p);
-				});
-			},
-			function(e){
-				console.error(e);
-			}
-			);
+			
+			var tr = db.transaction();
+			
+			var q = tr.query("select * from projects");
+			//q.param('id', 1);
+			tr.execute(function(data){
+				console.log(data);
+				projects = data;
+			});
+			
+			
 		}
 		page(1);
 	}]);

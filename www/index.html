@@ -1,72 +1,97 @@
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=yes, target-densitydpi=medium-dpi">
-  
-  <title>jQuery Mobile: Theme Download</title>
+  <head>
+	<meta charset="utf-8">
+	<meta name="xxviewport" content="width=device-width, initial-scale=1">
 
-  <script>
+	<title>jQuery Mobile: Theme Download</title>
+
+<script>
+(function(){
+	var i = -1;
+	window.startErrors = [];
 	// wrap console errors to alert()
-	window.onerror = function(msg, url, linenumber) {
-    	alert('Error message: '+unescape(unescape(msg))+'\nURL: '+url+'\nLine Number: '+linenumber);
+	window.onerror = function(msg, url, linenumber){
+    	msg = 'startError message: ' + unescape(unescape(msg)) + '\nURL: ' + url + '\nLine Number: ' + linenumber;
+		window.startErrors.unshift({
+			id: i--,
+			msg: msg,
+			isLog: false});
     	return true;
 	};
-	console.log = function(msg){alert(msg);};
+	console.log = function(msg){
+		window.startErrors.unshift({
+			id: i--,
+			msg: msg,
+			isLog: false}
+		);
+		//alert(unescape(unescape(msg)));
+	};
 	console.error = console.log;
-  </script>
-  <link rel="stylesheet" href="assets/css/mobile-angular-ui-hover.min.css" />
-  <link rel="stylesheet" href="assets/css/mobile-angular-ui-base.min.css" />
-  <link rel="stylesheet" href="assets/css/mobile-angular-ui-desktop.min.css" />
-  
-  <script src="assets/js/angular-1.5.2.min.js"></script>
-  <script src="assets/js/angular-route-1.5.2.min.js"></script>
-  <script src="assets/js/angular-sanitize-1.5.2.min.js"></script>
-  <script src="assets/js/mobile-angular-ui.min.js"></script>
-  
-  <!-- Required to use $touch, $swipe, $drag and $translate services -->
-  <script src="assets/js/mobile-angular-ui.gestures.min.js"></script>
-  
-  <!-- angular init app modules -->
-  <script src="bootstrap.js"></script>
-  
-  <!-- angular views -->
-  <script src="views/home/home.js"></script>
-  <script src="views/projects/projects.js"></script>
-  <script src="views/manageProject/manageProject.js"></script>
-  <script src="views/projects/projectDataProvider.js"></script>
-  <script src="views/articles/articles.js"></script>
-  <script src="views/bookings/bookings.js"></script>
-  
-  <!-- angular services -->
-  
-  <!-- angular components -->
-  <script src="components/topnav/topnav.js"></script>
-  
-</head>
-  <body>
-	<div ng-app="openRentstockApp">
-  <div ng-include="'components/topnav/topnav.html'" ></div>
-  
-	<div class="container" ng-view ></div>
-  
-  <!-- android console hack -->
-<div>
-  <br>
-  <h2>Console</h2>
-  <div ng-controller="consoleCtrl">
-	<div ng-repeat="m in msg">
-	  <p>
-		<b ng-show="m.isLog">Log {{m.id}}:</b>
-		<b ng-show="!m.isLog">Error {{m.id}}:</b>
-		<br>{{m.msg | json}}
-	  </p>
+})();
+</script>
+	<link rel="stylesheet" href="assets/css/mobile-angular-ui-hover.min.css" />
+	<link rel="stylesheet" href="assets/css/mobile-angular-ui-base.min.css" />
+	<link rel="stylesheet" href="assets/css/mobile-angular-ui-desktop.min.css" />
+
+	<script src="assets/js/angular-1.5.2.min.js"></script>
+	<script src="assets/js/angular-route-1.5.2.min.js"></script>
+	<script src="assets/js/angular-sanitize-1.5.2.min.js"></script>
+	<script src="assets/js/mobile-angular-ui.min.js"></script>
+
+	<!-- Required to use $touch, $swipe, $drag and $translate services -->
+	<script src="assets/js/mobile-angular-ui.gestures.min.js"></script>
+
+	<!-- angular init app modules -->
+	<script src="bootstrap.js"></script>
+
+	<!-- angular views -->
+	<script src="views/home/home.js"></script>
+	<script src="views/projects/projects.js"></script>
+	<script src="views/manageProject/manageProject.js"></script>
+	<script src="views/articles/articles.js"></script>
+	<script src="views/bookings/bookings.js"></script>
+
+	<!-- angular services -->
+	<script src="services/db.js"></script>
+
+	<!-- filter -->
+	<script src="filter/nl2br.js"></script>
+
+	<!-- angular components -->
+	<script src="components/topnav/topnav.js"></script>
+
+  </head>
+  <body ng-app="openRentstockApp" style="overflow-y: scroll;">
+	<div ng-include="'components/topnav/topnav.html'" ></div>
+	<div class="container">
+	  <div ng-view ></div>
+
+	  <!-- android console hack -->
+	  <div ng-controller="consoleCtrl">
+		<br>
+		  <hr>
+		<h2>Console Log</h2>
+		<div >
+		  <table class="table">
+			<tr>
+			<th style="width: 5%">ID</th>
+			<th style="width: 95%">Message</th>
+			<tbody ng-repeat="m in msg">
+			  <tr>
+				<td>
+				  <b ng-show="m.isLog">Log {{m.id}}:</b>
+				  <b ng-show="!m.isLog">Error {{m.id}}:</b>
+				</td>
+				<td ng-bind-html="m.msg | json | nl2br" style="font-size: 10px">
+
+				</td>
+			  </tr>
+			</tbody>
+		  </table>
+		</div>
+	  </div>
 	</div>
-  </div>
-</div>
-	</div>
-	fggzzt
-  <script>
-	alert('end');
-  </script>
-</body>
+
+	
+  </body>
 </html>

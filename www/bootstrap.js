@@ -4,16 +4,20 @@
 	// lib modules
 	var modules = [
 		'ngRoute',
+		'ngSanitize',
 		//'ui.bootstrap',
 	];
 
 	// app modules and dependecies
 	[
+		// common
+		['app', []],
+		// views
 		['orsProjectModule', ['ngRoute']],
 		['orsArticleModule', ['ngRoute']],
 		['orsBookingModule', ['ngRoute']],
 		// components
-		['topnavComponent', []]
+		['topnavComponent', []],
 	].forEach(function(v){
 		angular.module(v[0], v[1]);
 		modules.push(v[0]);
@@ -29,6 +33,7 @@
 
 	// init app
 	var app = angular.module('openRentstockApp', modules);
+	
 	
 	// set routes
 	app.config(function($routeProvider){
@@ -53,11 +58,7 @@
 	app.controller('consoleCtrl', function($scope){
 		var i = 0;
 		
-		$scope.msg = [{
-				id: i++,
-				isLog: true,
-				msg: "test msg"
-			}];
+		$scope.msg = window.startErrors;
 		
 		function addMsg(msg, isLog){
 			$scope.msg.unshift({
