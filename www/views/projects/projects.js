@@ -22,10 +22,9 @@ controller('projectsViewCtrl', ['$scope', 'orsDb', function($scope, db){
 			var tr = db.transaction();
 			
 			var q = tr.query("select * from projects");
-			//q.param('id', 1);
 			tr.execute(function(data){
 				console.log(data);
-				projects = data;
+				$scope.projects = data.result;
 			});
 			
 			

@@ -1,7 +1,7 @@
 <html>
   <head>
 	<meta charset="utf-8">
-	<meta name="xxviewport" content="width=device-width, initial-scale=1">
+	<meta name="xxviewport" content="width=device-width, height=device-height, initial-scale=1">
 
 	<title>jQuery Mobile: Theme Download</title>
 
@@ -29,18 +29,26 @@
 	console.error = console.log;
 })();
 </script>
-	<link rel="stylesheet" href="assets/css/mobile-angular-ui-hover.min.css" />
-	<link rel="stylesheet" href="assets/css/mobile-angular-ui-base.min.css" />
-	<link rel="stylesheet" href="assets/css/mobile-angular-ui-desktop.min.css" />
-
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css" />
+	
+	<!-- angular base -->
 	<script src="assets/js/angular-1.5.2.min.js"></script>
 	<script src="assets/js/angular-route-1.5.2.min.js"></script>
 	<script src="assets/js/angular-sanitize-1.5.2.min.js"></script>
-	<script src="assets/js/mobile-angular-ui.min.js"></script>
-
-	<!-- Required to use $touch, $swipe, $drag and $translate services -->
-	<script src="assets/js/mobile-angular-ui.gestures.min.js"></script>
-
+	
+	<!-- angular strap -->
+	<script src="assets/js/angular-strap.min.js"></script>
+	<script src="assets/js/angular-strap.tpl.min.js"></script>
+	<script src="assets/js/angular-animate.min.js"></script>
+	<script src="assets/js/angular-animate.strap-mock.js"></script>
+	
+	<!-- angular fastclick -->
+	<script src="assets/js/fastclick.min.js"></script>
+	
+	<!-- tinymce -->
+	<script src="assets/js/tinymce.min.js"></script>
+	
 	<!-- angular init app modules -->
 	<script src="bootstrap.js"></script>
 
@@ -61,7 +69,7 @@
 	<script src="components/topnav/topnav.js"></script>
 
   </head>
-  <body ng-app="openRentstockApp" style="overflow-y: scroll;">
+  <body ng-app="openRentstockApp" style="overflow-y: scroll; padding-top: 70px">
 	<div ng-include="'components/topnav/topnav.html'" ></div>
 	<div class="container">
 	  <div ng-view ></div>
@@ -71,7 +79,7 @@
 		<br>
 		  <hr>
 		<h2>Console Log</h2>
-		<div >
+		<div class="row">
 		  <table class="table">
 			<tr>
 			<th style="width: 5%">ID</th>
@@ -82,8 +90,8 @@
 				  <b ng-show="m.isLog">Log {{m.id}}:</b>
 				  <b ng-show="!m.isLog">Error {{m.id}}:</b>
 				</td>
-				<td ng-bind-html="m.msg | json | nl2br" style="font-size: 10px">
-
+				<td>
+				  <textarea cols="80" rows="10" class="input-lg" style="font-size: 12px" ng-bind-html="m.msg | json" style="font-size: 10px"></textarea>
 				</td>
 			  </tr>
 			</tbody>

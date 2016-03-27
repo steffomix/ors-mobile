@@ -3,20 +3,32 @@
   
   <table class="table">
 	<tr>
-	  <th>id</th>
-	  <th>name</th>
-	  <th>start</th>
-	  <th>end</th>
+	  <th>#</th>
+	  <th>Name</th>
+	  <th>Start</th>
+	  <th>End</th>
+	  <th>Notiz
 	</tr>
 	<tbody ng-repeat="p in projects">
 	<tr ng-click="manageProject(p.id);">
-	  <td>a{{p.id}}</td>
+	  <td>{{p.id}}</td>
 	  <td>{{p.name}}</td>
 	  <td>{{p.start}}</td>
 	  <td>{{p.end}}</td>
+	  <td>{{p.info}}</td>
 	</tr>
 	</tbody>
   </table>
   
   
 </div>
+<!--
+  
+"id": 1,
+"name": "First try\r\n",
+"start": "2016-2-15 09:00:00",
+"end": "2016-3-8 09:00:00",
+"info": "YYYY-MM-DD HH:MM:SS"
+
+
+-->

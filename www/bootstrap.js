@@ -5,7 +5,9 @@
 	var modules = [
 		'ngRoute',
 		'ngSanitize',
-		//'ui.bootstrap',
+		'ngAnimate',
+		'mgcrea.ngStrap',
+		'ng-fastclick'
 	];
 
 	// app modules and dependecies
