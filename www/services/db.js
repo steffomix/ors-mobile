@@ -15,7 +15,7 @@ angular.module('openRentstockApp')
 	function transaction(){
 
 		var querys = [],
-			url = 'db/db-query.php';;
+			url = 'db/db-query.php';
 		
 		function _query(params){
 			this.param = function(key, value, type){

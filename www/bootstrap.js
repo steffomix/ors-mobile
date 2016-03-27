@@ -5,8 +5,8 @@
 	var modules = [
 		'ngRoute',
 		'ngSanitize',
-		'ngAnimate',
 		'mgcrea.ngStrap',
+		'ngAnimate',
 		'ng-fastclick'
 	];
 

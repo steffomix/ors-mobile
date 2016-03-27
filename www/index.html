@@ -1,7 +1,7 @@
 <html>
   <head>
 	<meta charset="utf-8">
-	<meta name="xxviewport" content="width=device-width, height=device-height, initial-scale=1">
+	<meta name="xxviewport" content="width=device-width, initial-scale=1">
 
 	<title>jQuery Mobile: Theme Download</title>
 
@@ -29,9 +29,17 @@
 	console.error = console.log;
 })();
 </script>
+
+	<!-- bootstrap css -->
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css" />
-	
+	  
+	<!-- angular motion css -->
+	<link rel="stylesheet" href="assets/css/angular-motion.min.css" />
+	  
+	<!-- font-awesome -->
+	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+	  
 	<!-- angular base -->
 	<script src="assets/js/angular-1.5.2.min.js"></script>
 	<script src="assets/js/angular-route-1.5.2.min.js"></script>
@@ -40,8 +48,10 @@
 	<!-- angular strap -->
 	<script src="assets/js/angular-strap.min.js"></script>
 	<script src="assets/js/angular-strap.tpl.min.js"></script>
+	
+	<!-- angular animate -->
 	<script src="assets/js/angular-animate.min.js"></script>
-	<script src="assets/js/angular-animate.strap-mock.js"></script>
+	<!--<script src="assets/js/angular-animate.strap-mock.js"></script>-->
 	
 	<!-- angular fastclick -->
 	<script src="assets/js/fastclick.min.js"></script>
@@ -49,6 +59,7 @@
 	<!-- tinymce -->
 	<script src="assets/js/tinymce.min.js"></script>
 	
+	<!-- ### app stuff ### -->
 	<!-- angular init app modules -->
 	<script src="bootstrap.js"></script>
 
@@ -61,7 +72,10 @@
 
 	<!-- angular services -->
 	<script src="services/db.js"></script>
-
+	
+	<!-- templates cache -->
+	<script src="assets/js/views.tpl.min.js"></script>
+	
 	<!-- filter -->
 	<script src="filter/nl2br.js"></script>
 
@@ -69,8 +83,8 @@
 	<script src="components/topnav/topnav.js"></script>
 
   </head>
-  <body ng-app="openRentstockApp" style="overflow-y: scroll; padding-top: 70px">
-	<div ng-include="'components/topnav/topnav.html'" ></div>
+  <body ng-app="openRentstockApp" style="overflow-y: scroll; padding-top: 50px">
+	<div ng-include="'components/topnav/topnav.html'"></div>
 	<div class="container">
 	  <div ng-view ></div>
 
