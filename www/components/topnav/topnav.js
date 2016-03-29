@@ -1,29 +1,34 @@
 angular.module('openRentstockApp')
 .controller('topnavCtrl', ['$scope', function($scope){
-	/*
-		$scope.menuProjects = [
-			{
-				"text": "Another action",
-				"href": "#anotherAction",
-				"active": true
-			},
-			{
-				"text": "Display an alert",
-				"click": "$alert(\"Holy guacamole!\")"
-			},
-			{
-				"text": "External link",
-				"href": "/auth/facebook",
-				"target": "_self"
-			},
-			{
-				"divider": true
-			},
-			{
-				"text": "Separated link",
-				"href": "#separatedLink"
-			}
-		];
-
-	*/
-	}]);
+		
+	$scope.admin = [
+		{
+			'text' : 'SqLite Amin',
+			'href': 'db/admin/admin.php',
+			'target': '_blank'
+		},
+		{
+			'text' : 'AngularJs API',
+			'href': 'https://docs.angularjs.org/guide',
+			'target': '_blank'
+		},
+		{
+			'text' : 'Bootstrap 3 CSS',
+			'href': 'http://getbootstrap.com/css/',
+			'target': '_blank'
+		},
+		{
+			'text' : 'AngularStrap Directives',
+			'href': 'http://mgcrea.github.io/angular-strap/#',
+			'target': '_blank'
+		},
+		{
+			'text' : 'Angular Forms',
+			'href': 'http://docs.angular-formly.com',
+			'target': '_blank'
+		}
+		
+		
+	];
+	
+}]);

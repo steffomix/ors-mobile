@@ -4,6 +4,8 @@
 	// lib modules
 	var modules = [
 		'ngRoute',
+		'formly',
+		'formlyBootstrap',
 		'ngSanitize',
 		'mgcrea.ngStrap',
 		'ngAnimate',
@@ -13,13 +15,7 @@
 	// app modules and dependecies
 	[
 		// common
-		['app', []],
-		// views
-		['orsProjectModule', ['ngRoute']],
-		['orsArticleModule', ['ngRoute']],
-		['orsBookingModule', ['ngRoute']],
-		// components
-		['topnavComponent', []],
+		['app', []]
 	].forEach(function(v){
 		angular.module(v[0], v[1]);
 		modules.push(v[0]);

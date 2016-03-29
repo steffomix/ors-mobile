@@ -1,5 +1,7 @@
-angular.module('orsProjectModule').
-controller('projectsViewCtrl', ['$scope', 'orsDb', function($scope, db){
+angular.module('openRentstockApp').
+controller('projectsViewCtrl', 
+	['$scope', '$location', 'orsDb', 
+	function($scope ,$location, db){
 		
 		var dataUrl = 'projects.json',
 			ipp = 25; // items per page

@@ -19,7 +19,8 @@ angular.module('openRentstockApp')
 		
 		function _query(params){
 			this.param = function(key, value, type){
-				params.push([key, value, type]);
+				params.push({key:key, value:value, type:type});
+				return this;
 			};
 		}
 		
@@ -47,14 +48,23 @@ angular.module('openRentstockApp')
 		};
 	}
 	
+	function singleQuery(sql, params, callback){
+		var tr = new transaction(), q = tr.query(sql);
+		params.forEach(function(p){
+			p.length == 2
+			 ? q.param(p[0], p[1], '')
+			 : q.param(p[0], p[1], p[2]);
+		});
+		tr.execute(callback);
+	}
 	
-	
-	var inst = {
+	return {
 		transaction : function(){
 			return new transaction();
-		}
+		},
+		
+		query: singleQuery
 	};
 	
-	return inst;
 	
 }]);

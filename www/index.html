@@ -1,7 +1,7 @@
 <html>
   <head>
 	<meta charset="utf-8">
-	<meta name="xxviewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>jQuery Mobile: Theme Download</title>
 
@@ -37,13 +37,21 @@
 	<!-- angular motion css -->
 	<link rel="stylesheet" href="assets/css/angular-motion.min.css" />
 	  
-	<!-- font-awesome -->
+	<!-- font-awesome css -->
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+	
+	<!-- common libs -->
+	<script src="assets/js/var-dump.js"></script>
+	<script src="assets/js/api-check.min.js"></script>
 	  
 	<!-- angular base -->
 	<script src="assets/js/angular-1.5.2.min.js"></script>
 	<script src="assets/js/angular-route-1.5.2.min.js"></script>
 	<script src="assets/js/angular-sanitize-1.5.2.min.js"></script>
+
+	<!-- angular formly -->
+	<script src="assets/js/angular-formly.min.js"></script>
+	<script src="assets/js/angular-formly-templates-bootstrap.min.js"></script>
 	
 	<!-- angular strap -->
 	<script src="assets/js/angular-strap.min.js"></script>
@@ -57,9 +65,13 @@
 	<script src="assets/js/fastclick.min.js"></script>
 	
 	<!-- tinymce -->
-	<script src="assets/js/tinymce.min.js"></script>
+	<script src="assets/js/angular-tinymce.min.js"></script>
 	
-	<!-- ### app stuff ### -->
+	<!-- 
+	  
+	  ### app stuff ### 
+	  
+	-->
 	<!-- angular init app modules -->
 	<script src="bootstrap.js"></script>
 
@@ -74,11 +86,12 @@
 	<script src="services/db.js"></script>
 	
 	<!-- templates cache -->
-	<script src="assets/js/views.tpl.min.js"></script>
+	<script src="directives/forms/forms.js"></script>
 	
 	<!-- filter -->
 	<script src="filter/nl2br.js"></script>
-
+	<script src="filter/format-error.js"></script>
+	
 	<!-- angular components -->
 	<script src="components/topnav/topnav.js"></script>
 
@@ -105,7 +118,12 @@
 				  <b ng-show="!m.isLog">Error {{m.id}}:</b>
 				</td>
 				<td>
-				  <textarea cols="80" rows="10" class="input-lg" style="font-size: 12px" ng-bind-html="m.msg | json" style="font-size: 10px"></textarea>
+				  <!--
+				  <textarea cols="80" rows="10" class="input-lg" style="font-size: 12px" ng-bind-html="m.msg | json" style="font-size: 10px">
+					
+				  </textarea>
+				  -->
+				  <pre><code ng-bind-html="m.msg | nl2br" ></code></pre>
 				</td>
 			  </tr>
 			</tbody>
@@ -113,7 +131,5 @@
 		</div>
 	  </div>
 	</div>
-
-	
   </body>
 </html>

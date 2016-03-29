@@ -1,19 +1,19 @@
-<div ng-controller="manageProjectCtrl">
+<div ng-controller="manageProjectCtrl as vm">
   <h1>Manage Projects</h1>
   <div class=""><div>
-	  <form class="form-group-lg"  name="projectForm" ng-submit="updateProject" novalidate>
-		<div ng-class="{'has-error': projectForm.chief.$invalid && !projectForm.chief.$pristine}">
-		  <label>Project Chief</label>
-		  <input type="text" name="chief" ng-model="project.name" class="form-control" required >
-		  <p class="help-block" ng-show="projectForm.chief.$invalid && !projectForm.chief.$pristine">
-			Name of Chief is required
-		  </p>
-		</div>
-		
-		<div class="form-group">
-		  <input type="text">
-		</div>
-		{{project | json}}
-	  </form>
+	  <formly-form model="vm.user" fields="vm.userFields">
+		<button type="submit" class="btn btn-default" ng-click="vm.submit(vm.user)">Submit</button>
+	  </formly-form>
 	</div></div>
 </div>
+
+<!--
+  /*
+|      |   [id] = Number(1) 1
+|      |   [name] = String(11) "First try
+"
+|      |   [start] = String(18) "2016-2-15 09:00:00"
+|      |   [end] = String(17) "2016-3-8 09:00:00"
+|      |   [info] = String(19) "YYYY-MM-DD HH:MM:SS"
+*/
+-->
