@@ -19,10 +19,10 @@
 	<!-- Leave -->
 	<div class="form-group col-xs-6">
 	  <label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Leave</label>
-	  <div class="form-group col-xs-10">
+	  <div class="form-group col-xs-6">
         <input type="text" class="form-control" ng-model="project.dateStart" data-max-date="{{project.dateEnd}}" placeholder="Project Start" bs-datepicker>
 	  </div>
-	  <div class="form-group col-xs-2">
+	  <div class="form-group col-xs-4">
 		<input type="text" class="form-control" ng-model="project.timeStart" placeholder="Time leave" bs-timepicker>
 	  </div>
 	</div>
@@ -30,10 +30,10 @@
 	<!-- return -->
     <div class="form-group col-xs-6">
 	  <label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Return</label>
-	  <div class="form-group col-xs-10">
+	  <div class="form-group col-xs-6">
 		<input type="text" class="form-control" ng-model="project.dateEnd" data-min-date="{{project.dateStart}}" placeholder="Project End" bs-datepicker>
 	  </div>
-	  <div class="form-group col-xs-2">
+	  <div class="form-group col-xs-4">
 		<input type="text" class="form-control" ng-model="project.timeEnd" placeholder="Time return" bs-timepicker>
 	  </div>
     </div>
@@ -42,7 +42,8 @@
 	<div class="form-group">
 	  <button class="btn btn-default" ng-click="submit">{{formstate.mode}} Project</button>
 	</div>
-
+	<pre> {{project | json}}</pre>
+	<pre> {{rx | json}}</pre>
 	<!-- info -->
 	<div class="form-group">
 	  <label>Notes and Informations</label>
@@ -55,16 +56,18 @@
 	</div>
 
   </form>
-  <pre> {{project | json}}</pre>
 </div>
 
 <!--
-/*
-|      |   [id] = Number(1) 1
-|      |   [name] = String(11) "First try
-"
-|      |   [start] = String(18) "2016-2-15 09:00:00"
-|      |   [end] = String(17) "2016-3-8 09:00:00"
-|      |   [info] = String(19) "YYYY-MM-DD HH:MM:SS"
-*/
+"id": 1,
+"name": "First try\r\n",
+"start": "2016-2-15 09:00:00",
+"end": "2016-3-8 09:00:00",
+"info": "YYYY-MM-DD HH:MM:SS",
+"chief": "Mr. Brown",
+"cid": 1,
+"dateStart": "2016-04-03T23:00:00.000Z",
+"timeStart": "1970-01-01T14:00:00.000Z",
+"dateEnd": "2016-04-13T23:00:00.000Z",
+"timeEnd": "1970-01-01T14:00:00.000Z"
 -->

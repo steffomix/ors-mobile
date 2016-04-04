@@ -60,10 +60,12 @@
 		$scope.msg = window.startErrors;
 		
 		function addMsg(msg, isLog){
-			$scope.msg.unshift({
+			var stack = new Error('').stack.split('\n');
+			stack.splice(0,3);
+  			$scope.msg.unshift({
 				id: i++,
 				isLog: isLog,
-				msg: msg
+				msg: msg + '\n' + stack.join('\n')
 			}
 			);
 		}
@@ -85,7 +87,7 @@
 angular.module('app')
 .config(function($datepickerProvider) {
   angular.extend($datepickerProvider.defaults, {
-    dateFormat: 'dd/MM/yyyy',
+    dateFormat: 'dd.MM.yyyy',
     startWeek: 1,
 	container: 'body',
 	animation: 'none',
@@ -99,7 +101,7 @@ angular.module('app')
   angular.extend($timepickerProvider.defaults, {
     timeFormat: 'HH:mm',
     length: 7,
-	minuteStep: 15,
+	minuteStep: 10,
 	useNative: false,
 	animation: 'none'
   });

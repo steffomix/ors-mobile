@@ -105,6 +105,28 @@ angular.module('openRentstockApp')
 		tr.execute(callback);
 	}
 	
+	// return [yyyy, MM, dd, hh, mm]
+	// from give or new Date()
+	function dateArray(d){
+		if(!d){
+			d = new Date();
+		}
+		return [
+			d.getFullYear(),
+			('00'+d.getMonth()).slice(-2),
+			('00'+d.getDay()).slice(-2),
+			('00'+d.getHours()).slice(-2),
+			('00'+d.getMinutes()).slices(-2)];
+	}
+	
+	// 2016-3-1 09:00:00,2016-3-1 09:00:00
+	function parseDate(rx, date, time){
+		var dt = new Date();
+		return [date ? rx.exec(date) : ['', dt.getFullYear(), dt.getMonth(), dt.getDay(), '09', '00'],
+				time ? rx.exec(time) : d.slice(0, 3).concat([dt.getHours(), dt.getMinutes()])];
+	}
+	
+	// singelton instance
 	return {
 		transaction : function(){
 			return new transaction();
@@ -112,20 +134,21 @@ angular.module('openRentstockApp')
 		
 		query: singleQuery,
 		
-		/*
-		dateTime to db: ['tt.mm.yyyy', 'hh:mm'] --> 'yyyy-mm-tt hh-mm-ss'
-		db to dateTime: 'yyyy-mm-tt hh-mm-ss' --> ['tt.mm.yyyy', 'hh:mm'] 
-		*/
-		dateTime: function(date, time){
-			var d, t;
-			if(isArray(date)){
-				return date[0].split('.').reverse().join('-')+' '+date[1]+':00';
-			}else{
-				d = date.split(' ');
-				t = d[1].split(':');
-				return [d[0].split('-').reverse().join('.'), t[0]+':'+t[1]];
-			}
-		}
+		// yyyy-MM-ddT00:00:00.000Z --> yyyy-m[m]-d[d] hh:mm:ss
+		picker2db: function(date, time){
+			var rx = /(\d{4})\-(\d{2})\-(\d{2})T(\d{2})\:(\d{2})/;
+			var dt = parseDate(rx, date, time);
+			var d = dt[0], t = dt[1];
+			return [d[1], d[2], d[3]].join('-')+' '+[t[4], t[5]].join(':')+':00';
+		},
+		
+		// yyyy-m[m]-d[d] hh:mm:ss --> yyyy-MM-ddT00:00:00.000Z
+		db2picker: function(date, time){
+			var rx = /(\d{4})\-(\d{1,2})\-(\d{1,2}) (\d{2})\:(\d{2})/;
+			var dt = parseDate(rx, date, time);
+			var d = dt[0], t = dt[1];
+			return [d[1], ('00'+d[2]).slice(-2), ('00'+d[3]).slice(-2)].join('-')+'T'+[d[4], d[5]].join(':')+':00.000Z';
+		},
 		
 		
 	};

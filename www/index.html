@@ -137,15 +137,17 @@
 	  	$http.get('fcf.php').then(
 			function(data){
 				me.response = data.data;
+				//console.log(data.data);
+				$timeout(call, 2000);
 			},
 			function(e){
 			console.error(e);
 			}
 		);
-		$timeout(call, 3000);
+		
 	  }
 	  
-	  //call();
+	  // $timeout(call, 6000);
 	  
 	  }]);
 	</script>
