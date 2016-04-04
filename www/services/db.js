@@ -17,7 +17,7 @@ angular.module('openRentstockApp')
 		var querys = [],
 			url = 'db/db-query.php';
 		
-		function _query(params){
+		function QuerySql(params){
 			this.param = function(key, value, type){
 				params.push({key:key, value:value, type:type});
 				return this;
@@ -27,19 +27,19 @@ angular.module('openRentstockApp')
 		this.query = function(sql){
 			var q = {query: sql, params: []};
 			querys.push(q);
-			return new _query(q.params);
+			return new QuerySql(q.params);
 		};
 		
 		this.execute = function(callback){
 			
 			$http.post(url, querys).then(
 				function(data){
-					console.log({orsDB_response: data});
+					// console.log({orsDB_response: data});
 					if(data.data.errorCode){
 						console.error('orsDB-error '+data.data.errorCode+': '
 						+ data.data.errorText);
 					}
-					callback(data.data);
+					callback(new Result(data.data));
 				},
 				function(e){
 					console.error(e);
@@ -47,6 +47,53 @@ angular.module('openRentstockApp')
 			);
 		};
 	}
+	
+	function Result(data){
+		var rows = data.result, cursor = 0;
+		this.__proto__ = data;
+		
+		this.next = function(){
+			var row;
+			try{
+				row = rows[cursor];
+			}catch(e){
+				row = false;
+			}
+			if(row !== false){
+				cursor ++;
+				return row;
+			}
+			return false;
+		};
+		
+		this.first = function(){
+			try{
+				if(rows.length > 0){
+					return rows[0];
+				}
+				return false;
+			}catch(e){
+				console.error(e);
+				return false;
+			}
+		};
+		
+		this.all = function(){
+			return rows;
+		};
+		
+		this.reset = function(){
+			cursor = 0;
+		};
+		/*
+		'error' => $errorCode,
+		'errorText'  => $errorMsg,
+		'changes' => $db->changes(),
+		'lastInsertId' => $db->lastInsertRowID(),
+		'result' => $res
+		*/
+	}
+	
 	
 	function singleQuery(sql, params, callback){
 		var tr = new transaction(), q = tr.query(sql);
@@ -63,7 +110,24 @@ angular.module('openRentstockApp')
 			return new transaction();
 		},
 		
-		query: singleQuery
+		query: singleQuery,
+		
+		/*
+		dateTime to db: ['tt.mm.yyyy', 'hh:mm'] --> 'yyyy-mm-tt hh-mm-ss'
+		db to dateTime: 'yyyy-mm-tt hh-mm-ss' --> ['tt.mm.yyyy', 'hh:mm'] 
+		*/
+		dateTime: function(date, time){
+			var d, t;
+			if(isArray(date)){
+				return date[0].split('.').reverse().join('-')+' '+date[1]+':00';
+			}else{
+				d = date.split(' ');
+				t = d[1].split(':');
+				return [d[0].split('-').reverse().join('.'), t[0]+':'+t[1]];
+			}
+		}
+		
+		
 	};
 	
 	

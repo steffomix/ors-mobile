@@ -18,17 +18,14 @@ angular.module('openRentstockApp')
 			'target': '_blank'
 		},
 		{
-			'text' : 'AngularStrap Directives',
+			'text' : 'AngularStrap',
 			'href': 'http://mgcrea.github.io/angular-strap/#',
 			'target': '_blank'
 		},
 		{
-			'text' : 'Angular Forms',
-			'href': 'http://docs.angular-formly.com',
+			'text' : 'Phonegap',
+			'href': 'https://build.phonegap.com/apps',
 			'target': '_blank'
 		}
-		
-		
 	];
-	
 }]);

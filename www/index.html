@@ -65,6 +65,7 @@
 	<script src="assets/js/fastclick.min.js"></script>
 	
 	<!-- tinymce -->
+	<script src="assets/js/tinymce.min.js"></script>
 	<script src="assets/js/angular-tinymce.min.js"></script>
 	
 	<!-- 
@@ -118,11 +119,6 @@
 				  <b ng-show="!m.isLog">Error {{m.id}}:</b>
 				</td>
 				<td>
-				  <!--
-				  <textarea cols="80" rows="10" class="input-lg" style="font-size: 12px" ng-bind-html="m.msg | json" style="font-size: 10px">
-					
-				  </textarea>
-				  -->
 				  <pre><code ng-bind-html="m.msg | nl2br" ></code></pre>
 				</td>
 			  </tr>
@@ -130,6 +126,29 @@
 		  </table>
 		</div>
 	  </div>
+	</div>
+	
+	<div ng-controller="fcfCtrl as fcf"><p>{{fcf.response}}</p>
+	<script>
+	  angular.module("app").controller('fcfCtrl', ['$timeout', '$http', function($timeout, $http){
+	  var me = this;
+	  me.response = '';
+	  function call(){
+	  	$http.get('fcf.php').then(
+			function(data){
+				me.response = data.data;
+			},
+			function(e){
+			console.error(e);
+			}
+		);
+		$timeout(call, 3000);
+	  }
+	  
+	  //call();
+	  
+	  }]);
+	</script>
 	</div>
   </body>
 </html>

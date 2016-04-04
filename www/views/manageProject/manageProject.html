@@ -1,14 +1,65 @@
-<div ng-controller="manageProjectCtrl as vm">
-  <h1>Manage Projects</h1>
-  <div class=""><div>
-	  <formly-form model="vm.user" fields="vm.userFields">
-		<button type="submit" class="btn btn-default" ng-click="vm.submit(vm.user)">Submit</button>
-	  </formly-form>
-	</div></div>
+<h1>Manage Project</h1>
+<div ng-controller="manageProjectCtrl as ct">
+  <form>
+
+	<!-- name -->
+	<div class="form-group">
+	  <label for="name">Project Name</label>
+	  <input id="name" ng-model="project.name" class="form-control" type="text" required>
+	</div>
+
+	<!-- chief -->
+	<div class="form-group">
+	  <label for="chief">Chief</label>
+	  <select id="chief" class="form-control" ng-model="project.cid" 
+		ng-options="c.id as c.name for c in chiefs" required>
+	  </select>
+	</div>
+
+	<!-- Leave -->
+	<div class="form-group col-xs-6">
+	  <label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Leave</label>
+	  <div class="form-group col-xs-10">
+        <input type="text" class="form-control" ng-model="project.dateStart" data-max-date="{{project.dateEnd}}" placeholder="Project Start" bs-datepicker>
+	  </div>
+	  <div class="form-group col-xs-2">
+		<input type="text" class="form-control" ng-model="project.timeStart" placeholder="Time leave" bs-timepicker>
+	  </div>
+	</div>
+	
+	<!-- return -->
+    <div class="form-group col-xs-6">
+	  <label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Return</label>
+	  <div class="form-group col-xs-10">
+		<input type="text" class="form-control" ng-model="project.dateEnd" data-min-date="{{project.dateStart}}" placeholder="Project End" bs-datepicker>
+	  </div>
+	  <div class="form-group col-xs-2">
+		<input type="text" class="form-control" ng-model="project.timeEnd" placeholder="Time return" bs-timepicker>
+	  </div>
+    </div>
+	
+	<!-- submit 1 -->
+	<div class="form-group">
+	  <button class="btn btn-default" ng-click="submit">{{formstate.mode}} Project</button>
+	</div>
+
+	<!-- info -->
+	<div class="form-group">
+	  <label>Notes and Informations</label>
+	  <textarea ui-tinymce="mce" ng-model="project.info" ></textarea>
+	</div>
+
+	<!-- submit 2 -->
+	<div class="form-group">
+	  <button class="btn btn-default">{{formstate.mode}} Project</button>
+	</div>
+
+  </form>
+  <pre> {{project | json}}</pre>
 </div>
 
 <!--
-  /*
+/*
 |      |   [id] = Number(1) 1
 |      |   [name] = String(11) "First try
 "

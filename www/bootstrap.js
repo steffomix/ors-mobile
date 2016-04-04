@@ -4,12 +4,13 @@
 	// lib modules
 	var modules = [
 		'ngRoute',
-		'formly',
-		'formlyBootstrap',
+		//'formly',
+		//'formlyBootstrap',
 		'ngSanitize',
 		'mgcrea.ngStrap',
 		'ngAnimate',
-		'ng-fastclick'
+		'ng-fastclick',
+		'ui.tinymce'
 	];
 
 	// app modules and dependecies
@@ -52,7 +53,7 @@
 		// fallback
 		$routeProvider.otherwise({redirectTo: "/"});
 	});
-
+	
 	app.controller('consoleCtrl', function($scope){
 		var i = 0;
 		
@@ -80,5 +81,42 @@
 	});
 })();
 	
-	
+// datepicker
+angular.module('app')
+.config(function($datepickerProvider) {
+  angular.extend($datepickerProvider.defaults, {
+    dateFormat: 'dd/MM/yyyy',
+    startWeek: 1,
+	container: 'body',
+	animation: 'none',
+	useNative: false
+  });
+});
+
+// timepicker
+angular.module('app')
+.config(function($timepickerProvider) {
+  angular.extend($timepickerProvider.defaults, {
+    timeFormat: 'HH:mm',
+    length: 7,
+	minuteStep: 15,
+	useNative: false,
+	animation: 'none'
+  });
+});
+
+// tinymce
+function mce(){
+	return {
+    //inline: false,
+    height: 400,
+    plugins: 
+    'advlist autolink lists link image charmap print preview anchor '
+    +'searchreplace visualblocks code fullscreen '
+    +'insertdatetime media table contextmenu paste code',
+	skin: 'lightgray',
+	toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+    theme : 'modern'
+  };
+}
 

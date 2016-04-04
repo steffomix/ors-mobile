@@ -58,7 +58,7 @@ while($row = $result->fetchArray(SQLITE3_ASSOC)){
 }
 
 $resp = array(
-	'errors' => $errorCode,
+	'error' => $errorCode,
 	'errorText'  => $errorMsg,
 	'changes' => $db->changes(),
 	'lastInsertId' => $db->lastInsertRowID(),
