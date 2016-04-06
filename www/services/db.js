@@ -1,5 +1,5 @@
 angular.module('openRentstockApp')
-.factory('orsDb', ['$http', function($http){
+.factory('orsDb', ['$http', 'orsQuerys', function($http, orsQuerys){
 	
 	/*
 	 * example:
@@ -10,12 +10,12 @@ angular.module('openRentstockApp')
 		// do stuff here
 	});
 	*/
-	$http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
 	
 	function transaction(){
 
 		var querys = [],
-			url = 'db/db-query.php';
+			url = 'db/db-query.php',
+			dbQuerys = orsQuerys; // move closure
 		
 		function QuerySql(params){
 			this.param = function(key, value, type){
@@ -25,7 +25,7 @@ angular.module('openRentstockApp')
 		}
 		
 		this.query = function(sql){
-			var q = {query: sql, params: []};
+			var q = {query: dbQuerys[sql], params: []};
 			querys.push(q);
 			return new QuerySql(q.params);
 		};
@@ -34,12 +34,13 @@ angular.module('openRentstockApp')
 			
 			$http.post(url, querys).then(
 				function(data){
-					// console.log({orsDB_response: data});
-					if(data.data.errorCode){
-						console.error('orsDB-error '+data.data.errorCode+': '
-						+ data.data.errorText);
+					//console.log({orsDB_response: data});
+					if(data.data.errorCode == undefined ||  parseInt(data.data.errorCode) != 0){
+						console.error(
+						{'sqLit3 Error' : data.data.errorCode +': '+ data.data.errorText,
+						 'response' : data});
 					}
-					callback(new Result(data.data));
+					callback(new Result(data.data), data, querys);
 				},
 				function(e){
 					console.error(e);
@@ -73,7 +74,6 @@ angular.module('openRentstockApp')
 				}
 				return false;
 			}catch(e){
-				console.error(e);
 				return false;
 			}
 		};
@@ -105,26 +105,6 @@ angular.module('openRentstockApp')
 		tr.execute(callback);
 	}
 	
-	// return [yyyy, MM, dd, hh, mm]
-	// from give or new Date()
-	function dateArray(d){
-		if(!d){
-			d = new Date();
-		}
-		return [
-			d.getFullYear(),
-			('00'+d.getMonth()).slice(-2),
-			('00'+d.getDay()).slice(-2),
-			('00'+d.getHours()).slice(-2),
-			('00'+d.getMinutes()).slices(-2)];
-	}
-	
-	// 2016-3-1 09:00:00,2016-3-1 09:00:00
-	function parseDate(rx, date, time){
-		var dt = new Date();
-		return [date ? rx.exec(date) : ['', dt.getFullYear(), dt.getMonth(), dt.getDay(), '09', '00'],
-				time ? rx.exec(time) : d.slice(0, 3).concat([dt.getHours(), dt.getMinutes()])];
-	}
 	
 	// singelton instance
 	return {
@@ -133,23 +113,6 @@ angular.module('openRentstockApp')
 		},
 		
 		query: singleQuery,
-		
-		// yyyy-MM-ddT00:00:00.000Z --> yyyy-m[m]-d[d] hh:mm:ss
-		picker2db: function(date, time){
-			var rx = /(\d{4})\-(\d{2})\-(\d{2})T(\d{2})\:(\d{2})/;
-			var dt = parseDate(rx, date, time);
-			var d = dt[0], t = dt[1];
-			return [d[1], d[2], d[3]].join('-')+' '+[t[4], t[5]].join(':')+':00';
-		},
-		
-		// yyyy-m[m]-d[d] hh:mm:ss --> yyyy-MM-ddT00:00:00.000Z
-		db2picker: function(date, time){
-			var rx = /(\d{4})\-(\d{1,2})\-(\d{1,2}) (\d{2})\:(\d{2})/;
-			var dt = parseDate(rx, date, time);
-			var d = dt[0], t = dt[1];
-			return [d[1], ('00'+d[2]).slice(-2), ('00'+d[3]).slice(-2)].join('-')+'T'+[d[4], d[5]].join(':')+':00.000Z';
-		},
-		
 		
 	};
 	

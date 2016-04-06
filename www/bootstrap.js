@@ -59,13 +59,21 @@
 		
 		$scope.msg = window.startErrors;
 		
-		function addMsg(msg, isLog){
+		function addMsg(msg, args, isLog){
 			var stack = new Error('').stack.split('\n');
 			stack.splice(0,3);
+			try{
+				m = angular.toJson(msg);
+				msg = my_dump(msg, '', false, 2);
+			}catch(e){
+				// ignore
+			}
+			
   			$scope.msg.unshift({
 				id: i++,
 				isLog: isLog,
-				msg: msg + '\n' + stack.join('\n')
+				msg: msg + '\n\n' 
+					+ stack.join('\n')
 			}
 			);
 		}
@@ -75,7 +83,7 @@
 			return true;
 		};
 		
-		console.error =  function(msg){
+		console.error =  function(msg, args){
 			addMsg(msg, false);
 			return true;
 		};

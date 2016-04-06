@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_NOTICE);
+error_reporting(E_ALL);
 
 if(empty($_POST)){
 	// workaround angulars odd post header
@@ -25,7 +25,7 @@ $types = array(
 
 foreach($post as $q){
 	
-	//$stmt = $db->prepare("select * from projects where id=:id;");
+	//$stmt = $db->prepare("select * fromprojects where id=:id;");
 	//$stmt->bindValue(':id', 1);
 	
 	$stmt = $db->prepare($q['query']);
@@ -42,7 +42,7 @@ foreach($post as $q){
 	
 	$errorCode = $db->lastErrorCode();
 	$errorMsg = $db->lastErrorMsg();
-	if($errorCode > 0 && $errorCode < 100){
+	if($errorCode > 0){
 		$success = false;
 		$db.exec('rollback');
 		break;
@@ -53,12 +53,13 @@ $success && $db->exec('commit');
 
 
 $res = array();
+
 while($row = $result->fetchArray(SQLITE3_ASSOC)){
 	$res[] = $row;
 }
 
 $resp = array(
-	'error' => $errorCode,
+	'errorCode' => $errorCode,
 	'errorText'  => $errorMsg,
 	'changes' => $db->changes(),
 	'lastInsertId' => $db->lastInsertRowID(),

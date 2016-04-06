@@ -20,7 +20,7 @@
 	<div class="form-group col-xs-6">
 	  <label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Leave</label>
 	  <div class="form-group col-xs-6">
-        <input type="text" class="form-control" ng-model="project.dateStart" data-max-date="{{project.dateEnd}}" placeholder="Project Start" bs-datepicker>
+        <input type="text" class="form-control" ng-model="project.dateStart" ng-change="leaveChanged" data-max-date="{{project.dateEnd}}" placeholder="Project Start" bs-datepicker>
 	  </div>
 	  <div class="form-group col-xs-4">
 		<input type="text" class="form-control" ng-model="project.timeStart" placeholder="Time leave" bs-timepicker>
@@ -44,6 +44,7 @@
 	</div>
 	<pre> {{project | json}}</pre>
 	<pre> {{rx | json}}</pre>
+	<pre>{{date | json}}</pre>
 	<!-- info -->
 	<div class="form-group">
 	  <label>Notes and Informations</label>

@@ -23,13 +23,10 @@ controller('projectsViewCtrl',
 			
 			var tr = db.transaction();
 			
-			var q = tr.query("select * from projects");
+			var q = tr.query("select projects");
 			tr.execute(function(data){
-				console.log(data);
 				$scope.projects = data.result;
 			});
-			
-			
 		}
 		page(1);
 	}]);

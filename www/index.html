@@ -84,7 +84,9 @@
 	<script src="views/bookings/bookings.js"></script>
 
 	<!-- angular services -->
+	<script src="services/orsQuerys.js"></script>
 	<script src="services/db.js"></script>
+	<script src="services/date.js"></script>
 	
 	<!-- templates cache -->
 	<script src="directives/forms/forms.js"></script>
@@ -119,7 +121,7 @@
 				  <b ng-show="!m.isLog">Error {{m.id}}:</b>
 				</td>
 				<td>
-				  <pre><code ng-bind-html="m.msg | nl2br" ></code></pre>
+				  <pre><code ng-bind-html="m.msg" ></code></pre>
 				</td>
 			  </tr>
 			</tbody>

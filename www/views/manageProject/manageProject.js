@@ -1,39 +1,37 @@
 angular.module('openRentstockApp').
-controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb' ,function($scope, $routeParams, db){
+controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb', 'date', function($scope, $routeParams, db, date){
 
-		var userId = $routeParams.id, d = new Date(), pad ='00',
-		preDate = [d.getFullYear(), ('00'+d.getMonth()).slice(-2), ('00'+d.getDay()).slice(-2)].join('-')+'T09:00:00.000Z';
+		var userId = parseInt($routeParams.id), d = date.dateToPicker(new Date(),'09','00');
 		
-		$scope.rx = /(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\.(\d{3})/.exec(preDate);
+		// setup tinymce
+		$scope.mce = mce();
+		
+		// form mode, (update or copy) or create
+		$scope.update = userId ? true : false;
+		
+		//form default data;
 		$scope.project ={
-
 			"id": 1,
 			"name": "",
-			"start": "2016-2-15 09:00:00",
-			"end": "2016-3-8 09:00:00",
-			"info": "YYYY-MM-DD HH:MM:SS",
+			"start": d,
+			"end": d,
+			"info": "",
 			"chief": "",
-			"cid": 0,
-			"dateStart": preDate,
-			"timeStart": preDate,
-			"dateEnd": preDate,
-			"timeEnd": preDate
+			"cid": 0, // chiefId
+			"dateStart": d,
+			"timeStart": d,
+			"dateEnd": d,
+			"timeEnd": d
 		};
 
-
-		$scope.mce = mce();
-
-		// project
-		db.query(
-		['select p.*, chiefs.name as chief, chiefs.id as cid',
-			'from projects as p',
-			'join chiefs on p.id = chiefs.id',
-			'where p.id = :id;'].join(' '),
-		[['id', userId, 'int']], 
+		// load project
+		db.query('select project', [['id', userId, 'int']], 
 		function (data){
 			var d = data.first(), 
-				start = db.db2picker(d.start, d.start),
-				end = db.db2picker(d.end, d.end);
+				start = date.dbToPicker(d.start),
+				end = date.dbToPicker(d.end);
+				
+			$scope.date = [start, end];
 			
 			$scope.project = {
 				id: d.id,
@@ -48,16 +46,18 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb' ,function($sc
 				start: data.start,
 				end: data.end
 			};
-			
 		}
 		);
 
-		// chiefs
-		db.query('select id, name from chiefs', [], function(data){
+		// load all chiefs
+		db.query('select chiefs', [], function(data){
 			$scope.chiefs = data.all();
 		});
 
-
+		
+		$scope.leaveChanged = function(e){
+			console.log(e);
+		};
 
 
 	}]);
