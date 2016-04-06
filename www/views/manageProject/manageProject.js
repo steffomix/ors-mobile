@@ -1,8 +1,8 @@
 angular.module('openRentstockApp').
-controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb', 'date', function($scope, $routeParams, db, date){
+controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', 'orsDb', 'date', function($scope, $routeParams, $alert, db, date){
 
 		var userId = parseInt($routeParams.id), d = date.dateToPicker(new Date(),'09','00');
-		
+		$scope.dbg = this;
 		// setup tinymce
 		$scope.mce = mce();
 		
@@ -44,7 +44,9 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb', 'date', func
 				timeEnd: end,
 				info: d.info,
 				start: data.start,
-				end: data.end
+				end: data.end,
+				
+				copyName: d.name
 			};
 		}
 		);
@@ -59,6 +61,21 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb', 'date', func
 			console.log(e);
 		};
 
+		$scope.update = function(){
+			
+  			var myAlert = $alert({
+				title: 'Holy guacamole!', 
+				content: 'Best check yo self, you\'re not looking too good.', 
+				type: 'danger'});
+  
+			myAlert.show();
+		};
+		$scope.create = function(){
+			
+		};
+		$scope.copyProject = function(){
+			
+		};
 
 	}]);
 
@@ -74,4 +91,31 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', 'orsDb', 'date', func
   "timeStart": "1970-01-01T14:00:00.000Z",
   "dateEnd": "2016-04-13T23:00:00.000Z",
   "timeEnd": "1970-01-01T14:00:00.000Z"
+  
+  
+  
+  var app = angular.module('mgcrea.ngStrapDocs', ['ngAnimate', 'ngSanitize', 'mgcrea.ngStrap']);
+
+app.controller('MainCtrl', function($scope) {
+});
+
+'use strict';
+
+angular.module('mgcrea.ngStrapDocs')
+
+.controller('AlertDemoCtrl', function($scope, $templateCache, $timeout, $alert) {
+
+  $scope.alert = {title: 'Holy guacamole!', content: 'Best check yo self, you\'re not looking too good.', type: 'info'};
+
+  // Service usage
+  var myAlert = $alert({title: 'Holy guacamole!', content: 'Best check yo self, you\'re not looking too good.', placement: 'top', type: 'info', keyboard: true, show: false});
+  $scope.showAlert = function() {
+    myAlert.show(); // or myAlert.$promise.then(myAlert.show) if you use an external html template
+  };
+
+});
+
+
+  
+  
 */
