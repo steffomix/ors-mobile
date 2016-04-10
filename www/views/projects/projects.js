@@ -24,10 +24,22 @@ controller('projectsViewCtrl',
 			var tr = db.transaction();
 			
 			var q = tr.query("select projects");
-			tr.execute(function(data){
-				$scope.projects = data.result;
+			tr.execute(function(rows){
+				var rows = rows.all();
+				rows.forEach(function(r, i){
+					rows[i]['start'] = formatDate(r.start);
+					rows[i]['end'] = formatDate(r.end);
+				});
+				$scope.projects = rows;
 			});
 		}
 		page(1);
+		
+		function formatDate(t){
+			var d = new Date();
+			d.setTime(t);
+			d = d.getFullYear()+'.'+d.getMonth()+'.'+d.getDate()+' '+d.getHours()+':'+d.getMinutes();
+			return d;
+		}
 	}]);
 

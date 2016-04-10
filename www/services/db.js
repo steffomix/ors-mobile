@@ -1,5 +1,5 @@
 angular.module('openRentstockApp')
-.factory('orsDb', ['$http', '$timeout', 'orsQuerys', function($http, $timeout, orsQuerys){
+.factory('orsDb', ['$http', '$q', '$timeout', 'orsQuerys', function($http, $q, $timeout, orsQuerys){
 
 		/*
 		 * example:
@@ -30,18 +30,19 @@ angular.module('openRentstockApp')
 			};
 
 			this.execute = function(callback){
+				var deferred = $q.defer();
 				$http.post(url, querys).then(
-				function(data){
-					// console.log({orsDB_response: data});
-					if(data.data.errorCode == undefined ||  parseInt(data.data.errorCode) != 0){
+				function(response){
+					// console.log({orsDB_response: response});
+					if(response.data.errorCode == undefined ||  parseInt(response.data.errorCode) != 0){
 						console.error(
-						{'sqLit3 Error' : data.data.errorCode + ': ' + data.data.errorText,
-							'response' : data});
+						{'sqLit3 Error' : response.data.errorCode + ': ' + response.data.errorText,
+							'response' : response});
 					}
-					callback(new Result(data.data), data, querys);
+					callback(new Result(response.data), response, querys);
 				},
-				function(e){
-					console.error(e);
+				function(response){
+					console.error(response);
 				}
 				);
 			};
@@ -92,42 +93,136 @@ angular.module('openRentstockApp')
 			 */
 		}
 
-
-		function singleQuery(sql, params, callback, customSql){
-			var tr = new transaction(), q = tr.query(sql, customSql);
-			params.forEach(function(p){
-				p.length == 2
-				? q.param(p[0], p[1], '')
-				: q.param(p[0], p[1], p[2]);
-			});
-			tr.execute(callback);
-		}
-
 		/*
-		adds ascending ' (n)' to name if exists
+		
 		*/
-		function findName(sql, name, key, model, callback, next){
+		function _findName(name, sql, field, model, key, callback, next){
+			var i = 0, n;
 			// remove old extensions
 			if(!next){
 				next = 0;
-				name.trim().replace(/(\([0-9]*\))$/, '');
+				name = name.trim();
+				while ((i++) < 10 && name != (name = name.replace( /( *\([0-9]*\))$/, ''))){}
+				
 			}
+			//console.log(name);
 			// prepare next name
 			n = next > 0 ? name  + ' (' + next + ')' : name;
 			next ++;
 			// query
-			singleQuery(sql,[['name', n, 'string']],
+			singleQuery(sql,[[field, n, 'string']],
 			function(rows, data, querys){
 				var exists = rows.first();
 				// update view
 				$timeout(function(){
-					model[key] = n;
+					model[key] = 'Searching...: ' + n;
 				}, 0);
 				if(exists){
 					// try next number
-					findName(sql, name, key, model, callback, next);
+					_findName(name, sql, field, model, key, callback, next);
 				}else{
 					// return name
+					$timeout(function(){
+						model[key] = n;
+					}, 0);
+					callback(n);
+				}
+			}, function(data){
+				console.error(data);
+			}
+			);
+		}
+		
+		/*
+		
+		*/
+		function singleQuery(sql, params, callback){
+			var tr = new transaction(), q = tr.query(sql);
+			params.forEach(function(p){
+				p.length == 2 ? q.param(p[0], p[1], '') : q.param(p[0], p[1], p[2]);
+			});
+			tr.execute(callback);
+		}
+		
+		// singelton instance
+		return {
+			
+			transaction : function(){
+				return new transaction();
+			},
+
+			/*
+			example:
+			db.query(
+				'queryname', 
+				[['id', 123, 'int']], 
+				function(Result, response, querys){...}
+				
+			Result:
+				result.first()
+					first row or false
+				result.all()
+					all rows or false
+				result.next()
+					next row or false
+				result.reset() 
+					set cursor to first row
+			);
+			*/
+			query: singleQuery,
+			
+			/*
+				adds (n) number to existing entry
+				name: where the (n) will be added
+				sql: query name
+				field: column to search on
+				params: params for qery
+				model: form model from $scope -> yes,the search is shown life
+				key: key of the model
+			
+				example:
+				db.findName('my project', 'name', $scope.project, 'pname', function(awesomeName){... your stuff ...});
+			*/
+			findName: function(name, sql, field, model, key, callback){
+				_findName(name, sql, field, model, key, callback);
+			}
+		};
+	}]);
+	
+	
+		
+		/*
+		
+		//adds ascending ' (n)' to name if exists
+		function findName(sql, params, name, key, model, callback, next){
+			var i = 0, n;
+			// remove old extensions
+			if(!next){
+				next = 0;
+				name = name.trim();
+				while ((i++) < 10 && name != (name = name.replace( /( *\([0-9]*\))$/, ''))){}
+				
+			}
+			console.log(name);
+			// prepare next name
+			n = next > 0 ? name  + ' (' + next + ')' : name;
+			next ++;
+			// query
+			singleQuery(sql,[[key, n, 'string']].concat(params),
+			function(rows, data, querys){
+				var exists = rows.first();
+				// update view
+				$timeout(function(){
+					model[key] = n + ' [already exists...]';
+				}, 0);
+				if(exists){
+					// try next number
+					findName(sql, params, name, key, model, callback, next);
+				}else{
+					// return name
+					$timeout(function(){
+						model[key] = n;
+					}, 0);
 					callback(n);
 				}
 			}, function(data){
@@ -136,15 +231,4 @@ angular.module('openRentstockApp')
 			);
 		}
 
-
-		// singelton instance
-		return {
-			transaction : function(){
-				return new transaction();
-			},
-
-			query: singleQuery,
-
-			findName: findName
-		};
-	}]);
+*/

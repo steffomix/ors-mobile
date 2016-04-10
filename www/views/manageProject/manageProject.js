@@ -5,6 +5,7 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 
 		// form mode, update and copy or create
 		$scope.isUpdate = projectId ? true : false;
+		$scope.isLoading = false;
 
 		// set default values
 		initForm();
@@ -75,13 +76,26 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 		});
 
 
-		/*
+		/*  
 		 update
 		 */
-		$scope.update = function(){
+		$scope.onUpdate = function(){
+			$scope.isLoading = true;
+			if(!projectId){return;}
 			if(!$scope.form.$valid){
 				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
 			}
+			db.query('project exists update', 
+				[['id', projectId, 'int'],['name', $scope.project.name, 'string']],
+				function(rows){
+					if(rows.first()){
+						$scope.isLoading = false;
+						return $alert({content: 'Project Name is already in use', type: 'danger' });
+					}
+					update();
+				});
+		};
+		function update(){
 			var p = $scope.project;
 			db.query('update project', 
 			[
@@ -99,28 +113,27 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 			});
 		};
 
+		
 		/*
 		 create
 		 */
-		$scope.create = function(name){
+		$scope.onCreate = function(){
+			$scope.isLoading = true;
 			if(!$scope.form.$valid){
 				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
 			}
-			if(!name){
-				return db.findName('select project by name', $scope.project.name, 'name', $scope.project, $scope.create);
-				return findName($scope.project.name, $scope.create, $scope.project);
-			}
+			db.query('project exists create', 
+				[['name', $scope.project.name, 'string']],
+				function(rows){
+					if(rows.first()){
+						$scope.isLoading = false;
+						return $alert({content: 'Project Name is already in use', type: 'danger' });
+					}
+					create();
+				});
+		};
+		function create(name){
 			var p = $scope.project;
-
-
-			$timeout(function(){
-				p.name = name;
-				p.dateStart = new Date();
-			}, 1);
-
-			alert(name);
-
-			return;
 			db.query('create project', 
 			[
 				['name', name, 'string'],
@@ -132,7 +145,7 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 
 			],
 			function(rows, data, querys){
-				console.log([rows, data, querys]);
+				$scope.isLoading = false;
 				$alert({ title: '', content: 'Project created', type: 'success'});
 			});
 		};
@@ -140,10 +153,19 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 		/*
 		 copy
 		 */
-		$scope.copyProject = function(){
-
+		$scope.onCopy = function(){
+			$scope.isLoading = true;
+			if(!$scope.copy.$valid || !$scope.form.$valid){
+				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
+			}
+			db.findName($scope.project.name, 'project exists create', 'name', $scope.project, 'copyName', copy);
+			
 		};
-
+		function copy(name){
+			alert(name);
+			$scope.isLoading = false;
+		}
+		
 		/*
 		 start changed
 		 */
@@ -165,40 +187,6 @@ controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout',
 				}},
 			0);
 		};
-
-		
-		/*
-		 find project-name
-		 */
-		function findName(name, callback, next){
-			// remove old extensions
-			if(!next){
-				next = 0;
-				name.trim().replace(/(\([0-9]*\))$/, '');
-			}
-			// prepare next name
-			n = next > 0 ? name  + ' (' + next + ')' : name;
-			next ++;
-			// query
-			db.query('select project by name', [['name', n, 'string']],
-			function(rows, data, querys){
-				console.log(data);
-				var exists = rows.first();
-				// update view
-				$timeout(function(){
-					$scope.project.name = n;
-				},0);
-				// 
-				if(exists){
-					findName(name, callback, next);
-				}else{
-					callback(n);
-				}
-			}, function(data){
-				console.error(data);
-				}
-			);
-		}
 
 		/*
 		 combine date and time for start

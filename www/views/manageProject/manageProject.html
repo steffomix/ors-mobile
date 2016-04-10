@@ -1,27 +1,22 @@
 
 <div ng-controller="manageProjectCtrl as ct">
-  <form name="form">
-	<fieldset><legend>Manage Project</legend>
+
+  <fieldset ng-disabled="isLoading" >
+	<form name="form">
+	  <legend>{{isUpdate ? 'Edit/Copy' : 'Create new'}} Project</legend>
 
 	  <!-- name -->
 	  <div class="form-group" ng-class="{'has-error' : !form.name.$valid && !form.name.$pristine}">
 		<label for="name">Project Name</label>
 		<input name="name" ng-model="project.name" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required placeholder="Project Name" >
 	  </div>
-	  
+
 	  <!-- chief -->
 	  <div class="form-group">
 		<label for="chief">Chief</label>
 		<select name="chief" class="form-control" ng-model="project.cid" ng-options="chief.id as chief.name for chief in chiefs" required></select>
 	  </div>
-	  
-	  
-	  
-	  <pre class="container-fluid"> {{project | json}}</pre>
-	  
-	  
-	  
-	  
+
 	  <!-- Leave -->
 	  <div class="form-group col-xs-5 text-center">
 		<label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Leave</label>
@@ -33,7 +28,7 @@
 		</div>
 	  </div>
 	  <div class="form-group col-xs-2 text-center"></div>
-	  
+
 	  <!-- return -->
 	  <div class="form-group col-xs-5 text-center">
 		<label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Return</label>
@@ -45,37 +40,36 @@
 		</div>
 	  </div>
 
-		<!-- submit update -->
+	  <!-- submit update -->
 	  <div class="form-group text-center" ng-show="isUpdate" >
-		  <button name="update" class="btn btn-default" ng-click="update()">Update Project</button>
-		</div>
+		<button name="update" class="btn btn-default" ng-click="onUpdate()">Update Project</button>
+	  </div>
 
-		<!-- submit create -->
+	  <!-- submit create -->
 	  <div class="form-group text-center" ng-hide="isUpdate" >
-		  <button name="create" class="btn btn-default" ng-click="create()">Create Project</button>
-		</div>
+		<button name="create" class="btn btn-default" ng-click="onCreate()">Create Project</button>
+	  </div>
 
 	  <!-- info -->
-	  <div class="form-group">
+	  <div class="form-group" onclick="return true;" >
 		<label>Notes and Informations</label>
 		<textarea name="info" ui-tinymce="mce" ng-model="project.info" ></textarea>
 	  </div>
-	</fieldset>
-	<!-- copy options -->
-	<div class="checkbox text-center">
-	  <!-- copy bookings -->
-	  <div  class="form-group">
-		<label>
-		  <input type="checkbox" name="active" ng-model="project.active" > Project is enabled and active
-		</label>
+
+	  <!-- copy options -->
+	  <div class="checkbox text-center">
+		<!-- copy bookings -->
+		<div  class="form-group">
+		  <label>
+			<input type="checkbox" name="active" ng-model="project.active" > Project is enabled and active
+		  </label>
+		</div>
 	  </div>
-	</div>
-  </form>
-  
-  
-  
-  <form name="copy">
-	<fieldset ng-show="isUpdate" ><legend>Copy Project: <i>{{project.name}}</i></legend>
+	</form>
+  </fieldset>
+
+  <fieldset ng-disabled="isLoading" ng-show="isUpdate" ><legend>Copy Project: <i>{{project.name}}</i></legend>
+	<form name="copy">
 	  <hr>
 	  <!-- copy name -->
 	  <div class="form-group">
@@ -84,9 +78,9 @@
 	  </div>
 
 	  <!-- submit copy -->
-	  <div class="form-group" ng-show="update">
-		<div class="form-group col-xs-3 row" ng-show="update" >
-		  <button name="btn-copy" ng-click="copyProject" class="btn btn-default">Copy Project</button>
+	  <div class="form-group">
+		<div class="form-group col-xs-3 row">
+		  <button name="btn-copy" ng-click="onCopy()" class="btn btn-default">Copy Project</button>
 		</div>
 
 		<!-- copy options -->
@@ -99,21 +93,7 @@
 		  </div>
 		</div>
 	  </div>
-	</fieldset>
-
-  </form>
+	  
+	</form>
+  </fieldset>
 </div>
-
-<!--
-"id": 1,
-"name": "First try\r\n",
-"start": "2016-2-15 09:00:00",
-"end": "2016-3-8 09:00:00",
-"info": "YYYY-MM-DD HH:MM:SS",
-"chief": "Mr. Brown",
-"cid": 1,
-"dateStart": "2016-04-03T23:00:00.000Z",
-"timeStart": "1970-01-01T14:00:00.000Z",
-"dateEnd": "2016-04-13T23:00:00.000Z",
-"timeEnd": "1970-01-01T14:00:00.000Z"
--->

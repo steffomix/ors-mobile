@@ -15,11 +15,12 @@ angular.module('openRentstockApp')
 		// select project chiefs
 		'select chiefs': 'select id, name from chiefs order by name',
 		// update project
+		'project exists update': 'select id from projects where id != :id and name = :name limit 1',
 		'update project': 'update projects set \
 			name = :name, chief = :chief, start = :start, end = :end, info = :info, active = :active \
 			where id = :id ;',
 		// create project
-		'select project by name': 'select name from projects where name = :name limit 1',
+		'project exists create': 'select id from projects where name = :name limit 1',
 		'create project': 'insert into \
 			projects (name, chief, start, end, info, active) \
 			values (:name, :chief, :start, :end, :info, :active)'
