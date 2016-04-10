@@ -1,69 +1,86 @@
 
 <div ng-controller="manageProjectCtrl as ct">
-  <div id="alerts"></div>
   <form name="form">
 	<fieldset><legend>Manage Project</legend>
 
 	  <!-- name -->
-	  <div class="form-group">
+	  <div class="form-group" ng-class="{'has-error' : !form.name.$valid && !form.name.$pristine}">
 		<label for="name">Project Name</label>
-		<input name="inp-name" ng-model="project.name" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required>
+		<input name="name" ng-model="project.name" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required placeholder="Project Name" >
 	  </div>
-
+	  
 	  <!-- chief -->
 	  <div class="form-group">
 		<label for="chief">Chief</label>
-		<select name="sel-chief" class="form-control" ng-model="project.cid" ng-options="c.id as c.name for c in chiefs" required>
-		</select>
+		<select name="chief" class="form-control" ng-model="project.cid" ng-options="chief.id as chief.name for chief in chiefs" required></select>
 	  </div>
-
+	  
+	  
+	  
+	  <pre class="container-fluid"> {{project | json}}</pre>
+	  
+	  
+	  
+	  
 	  <!-- Leave -->
-	  <div class="form-group col-xs-6">
+	  <div class="form-group col-xs-5 text-center">
 		<label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Leave</label>
-		<div class="form-group col-xs-6">
-		  <input name="inp-date-start" type="text" class="form-control" ng-model="project.dateStart" ng-change="leaveChanged()" data-max-date="{{project.dateEnd}}" placeholder="Project Start" bs-datepicker>
+		<div id="date-start" class="form-group col-xs-6">
+		  <input name="dateStart" type="text" class="form-control" ng-model="project.dateStart" ng-change="startChanged(true)" bs-datepicker>
 		</div>
-		<div class="form-group col-xs-4">
-		  <input name="inp-time-start" type="text" class="form-control" ng-model="project.timeStart" ng-change="leaveChanged()" placeholder="Time leave" bs-timepicker>
+		<div id="time-start" class="form-group col-xs-4">
+		  <input name="timeStart" type="text" class="form-control" ng-model="project.timeStart" ng-change="startChanged(false)" bs-timepicker>
 		</div>
 	  </div>
-
+	  <div class="form-group col-xs-2 text-center"></div>
+	  
 	  <!-- return -->
-	  <div class="form-group col-xs-6">
+	  <div class="form-group col-xs-5 text-center">
 		<label class="control-label col-xs-12"><i class="fa fa-calendar"></i> Return</label>
-		<div class="form-group col-xs-6">
-		  <input name="inp-date-end" type="text" class="form-control" ng-model="project.dateEnd" data-min-date="{{project.dateStart}}" placeholder="Project End" bs-datepicker>
+		<div id="date-end" class="form-group col-xs-6">
+		  <input name="dateEnd" type="text" class="form-control" ng-model="project.dateEnd" ng-change="endChanged(true)" bs-datepicker>
 		</div>
-		<div class="form-group col-xs-4">
-		  <input name="inp-time-end" type="text" class="form-control" ng-model="project.timeEnd" placeholder="Time return" bs-timepicker>
+		<div id="time-end" class="form-group col-xs-4">
+		  <input name="timeEnd" type="text" class="form-control" ng-model="project.timeEnd" ng-change="endChanged(false)" bs-timepicker>
 		</div>
 	  </div>
 
-	  <!-- submit update -->
-	  <div class="form-group" ng-show="update">
-		<button name="btn-update" class="btn btn-default" ng-click="update()">Update Project</button>
-	  </div>
+		<!-- submit update -->
+	  <div class="form-group text-center" ng-show="isUpdate" >
+		  <button name="update" class="btn btn-default" ng-click="update()">Update Project</button>
+		</div>
 
-	  <!-- submit create -->
-	  <div class="form-group" ng-hide="update">
-		<button name="btn-create" class="btn btn-default" ng-click="create()">Create Project</button>
-	  </div>
-
-	  <pre class="container-fluid"> {{xform | json}}</pre>
+		<!-- submit create -->
+	  <div class="form-group text-center" ng-hide="isUpdate" >
+		  <button name="create" class="btn btn-default" ng-click="create()">Create Project</button>
+		</div>
 
 	  <!-- info -->
 	  <div class="form-group">
 		<label>Notes and Informations</label>
-		<textarea name="inp-info" ui-tinymce="mce" ng-model="project.info" ></textarea>
+		<textarea name="info" ui-tinymce="mce" ng-model="project.info" ></textarea>
 	  </div>
 	</fieldset>
-	<hr>
-	<fieldset ng-show="update" ><legend>Copy Project: <i ng-bind-html="project.name"></i></legend>
-
+	<!-- copy options -->
+	<div class="checkbox text-center">
+	  <!-- copy bookings -->
+	  <div  class="form-group">
+		<label>
+		  <input type="checkbox" name="active" ng-model="project.active" > Project is enabled and active
+		</label>
+	  </div>
+	</div>
+  </form>
+  
+  
+  
+  <form name="copy">
+	<fieldset ng-show="isUpdate" ><legend>Copy Project: <i>{{project.name}}</i></legend>
+	  <hr>
 	  <!-- copy name -->
 	  <div class="form-group">
-		<label for="name">Project Name</label>
-		<input name="inp-copy" ng-model="project.copyName" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required>
+		<label for="copy">New Project Name</label>
+		<input name="copy" ng-model="project.copyName" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required>
 	  </div>
 
 	  <!-- submit copy -->
@@ -77,7 +94,7 @@
 		  <!-- copy bookings -->
 		  <div  class="form-group">
 			<label>
-			  <input name="ck-copy-bookings" type="checkbox"> Copy Bookings
+			  <input type="checkbox" name="copyBookings" ng-model="copyBookings" ng-true-value="1" ng-false-value="0"> Copy Bookings
 			</label>
 		  </div>
 		</div>

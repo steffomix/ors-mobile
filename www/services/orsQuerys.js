@@ -2,18 +2,37 @@ angular.module('openRentstockApp')
 .factory('orsQuerys', function($http){
 	
 	return {
-		
-		// projects
-		'select projects' : 'select * from projects order by start desc',
-		'select project' : 'select p.*, chiefs.name as chief, chiefs.id as cid '
-			+'from projects as p '
-			+'join chiefs on p.id = chiefs.id '
-			+'where p.id = :id',
-			
-		// project chiefs
-		'select chiefs' : 'select * from chiefs order by name'
-		
+		/*
+		manage project
+		*/
+		// select projects
+		'select projects': 'select * from projects order by start desc',
+		// select project by id
+		'select project': 'select p.id, p.name, p.chief as cid, p.start, p.end, p.info, p.active, c.name as chief \
+			from projects as p \
+			left join chiefs as c on p.chief = c.id \
+			where p.id = :id',
+		// select project chiefs
+		'select chiefs': 'select id, name from chiefs order by name',
+		// update project
+		'update project': 'update projects set \
+			name = :name, chief = :chief, start = :start, end = :end, info = :info, active = :active \
+			where id = :id ;',
+		// create project
+		'select project by name': 'select name from projects where name = :name limit 1',
+		'create project': 'insert into \
+			projects (name, chief, start, end, info, active) \
+			values (:name, :chief, :start, :end, :info, :active)'
 	};
 	
 	
 });
+
+/*
+['id', projectId, 'int'],
+				['name', p.name, 'string'],
+				['chief', p.cid, 'int'],
+				['start', getDate(f.dateStart.$modelValue, f.timeStart.$modelValue, 'db'), 'string'],
+				['end', getDate(f.dateEnd.$modelValue, f.timeEnd.$modelValue, 'db'), 'string'],
+				['info', p.info, 'string']
+*/

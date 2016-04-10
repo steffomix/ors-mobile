@@ -19,14 +19,15 @@
     	return true;
 	};
 	console.log = function(msg){
+	
 		window.startErrors.unshift({
 			id: i--,
-			msg: msg,
+			msg: msg + '\n\n'+new Error('').stack,
 			isLog: false}
 		);
 		//alert(unescape(unescape(msg)));
 	};
-	console.error = console.log;
+	console.error = window.onerror = console.log;
 })();
 </script>
 
@@ -102,6 +103,7 @@
   </head>
   <body ng-app="openRentstockApp" style="overflow-y: scroll; padding-top: 60px">
 	<div ng-include="'components/topnav/topnav.html'"></div>
+	<div id="alerts" class="container"></div>
 	<div class="container">
 	  <div ng-view ></div>
 

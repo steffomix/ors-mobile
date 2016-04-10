@@ -28,4 +28,12 @@ angular.module('openRentstockApp')
 			'target': '_blank'
 		}
 	];
+	
+	$scope.create = [
+		{
+			'text' : 'Project',
+			'href': '#/manageProject',
+			'target': '_self'
+		}
+	];
 }]);

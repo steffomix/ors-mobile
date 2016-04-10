@@ -1,121 +1,239 @@
 angular.module('openRentstockApp').
-controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', 'orsDb', 'date', function($scope, $routeParams, $alert, db, date){
+controller('manageProjectCtrl', ['$scope', '$routeParams', '$alert', '$timeout', 'orsDb', 'date', function($scope, $routeParams, $alert, $timeout, db, date){
 
-		var userId = parseInt($routeParams.id), d = date.dateToPicker(new Date(),'09','00');
-		$scope.dbg = this;
+		var projectId = parseInt($routeParams.id);
+
+		// form mode, update and copy or create
+		$scope.isUpdate = projectId ? true : false;
+
+		// set default values
+		initForm();
+
 		// setup tinymce
 		$scope.mce = mce();
-		
-		// form mode, (update or copy) or create
-		$scope.update = userId ? true : false;
-		
-		//form default data;
-		$scope.project ={
-			"id": 1,
-			"name": "",
-			"start": d,
-			"end": d,
-			"info": "",
-			"chief": "",
-			"cid": 0, // chiefId
-			"dateStart": d,
-			"timeStart": d,
-			"dateEnd": d,
-			"timeEnd": d
-		};
 
-		// load project
-		db.query('select project', [['id', userId, 'int']], 
-		function (data){
-			var d = data.first(), 
-				start = date.dbToPicker(d.start),
-				end = date.dbToPicker(d.end);
-				
-			$scope.date = [start, end];
-			
+		/*
+		 init default values
+		 */
+		function initForm(){
+			var d = new Date();
+			d.setMinutes(Math.round(d.getMinutes() / 10) * 10);
 			$scope.project = {
-				id: d.id,
-				name: d.name,
-				chief: d.chief,
-				cid: d.cid,
-				dateStart: start,
-				timeStart: start,
-				dateEnd: end,
-				timeEnd: end,
-				info: d.info,
-				start: data.start,
-				end: data.end,
-				
-				copyName: d.name
+				id: '',
+				name: '',
+				start: d,
+				end: d,
+				info: '',
+				chief: '',
+				cid: 1, // chiefId
+				dateStart: d,
+				timeStart: d,
+				dateEnd: d,
+				timeEnd: d,
+				active: true
 			};
 		}
-		);
+		/*
+		 load
+		 */
+		if(projectId){
+			db.query('select project', [['id', projectId, 'int']], 
+			function (rows, data, querys){
+				var r = rows.first(), s = new Date(), e = new Date();
+				s.setTime(r.start);
+				roundMinutes(s);
+				e.setTime(r.end);
+				roundMinutes(e);
+				$scope.project = {
+					// project
+					id: 	r.id,
+					name: 	r.name,
+					start: 	s,
+					end: 	e,
+					info: 	r.info,
+					// chief
+					cid: 	r.cid,
+					chief: 	r.chief,
+					// date-timepicker helper
+					dateStart: 	s,
+					timeStart: 	s,
+					dateEnd: 	e,
+					timeEnd: 	e,
+					// state
+					active: r.active ? true : false,
+					// new name for copy
+					copyName: r.name
+				};
+			});
+		}
 
-		// load all chiefs
+		/*
+		 load chiefs for pulldown
+		 */
 		db.query('select chiefs', [], function(data){
 			$scope.chiefs = data.all();
 		});
 
-		
-		$scope.leaveChanged = function(e){
-			console.log(e);
+
+		/*
+		 update
+		 */
+		$scope.update = function(){
+			if(!$scope.form.$valid){
+				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
+			}
+			var p = $scope.project;
+			db.query('update project', 
+			[
+				['id', projectId, 'int'],
+				['name', p.name, 'string'],
+				['chief', p.cid, 'int'],
+				['start', tStart().getTime(), 'string'],
+				['end', tEnd().getTime(), 'string'],
+				['info', p.info, 'string'],
+				['active', p.active, 'int']
+
+			],
+			function(rows, data, querys){
+				$alert({content: 'Project updated', type: 'success'});
+			});
 		};
 
-		$scope.update = function(){
-			
-  			var myAlert = $alert({
-				title: 'Holy guacamole!', 
-				content: 'Best check yo self, you\'re not looking too good.', 
-				type: 'danger'});
-  
-			myAlert.show();
+		/*
+		 create
+		 */
+		$scope.create = function(name){
+			if(!$scope.form.$valid){
+				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
+			}
+			if(!name){
+				return db.findName('select project by name', $scope.project.name, 'name', $scope.project, $scope.create);
+				return findName($scope.project.name, $scope.create, $scope.project);
+			}
+			var p = $scope.project;
+
+
+			$timeout(function(){
+				p.name = name;
+				p.dateStart = new Date();
+			}, 1);
+
+			alert(name);
+
+			return;
+			db.query('create project', 
+			[
+				['name', name, 'string'],
+				['chief', p.cid, 'int'],
+				['start', tStart().getTime(), 'string'], // int is too short
+				['end', tEnd().getTime(), 'string'], // int is too short
+				['info', p.info, 'string'],
+				['active', p.active, 'int']
+
+			],
+			function(rows, data, querys){
+				console.log([rows, data, querys]);
+				$alert({ title: '', content: 'Project created', type: 'success'});
+			});
 		};
-		$scope.create = function(){
-			
-		};
+
+		/*
+		 copy
+		 */
 		$scope.copyProject = function(){
-			
+
 		};
+
+		/*
+		 start changed
+		 */
+		$scope.startChanged = function(isDate){
+			$timeout(function(){
+				if(tStart().getTime() > tEnd().getTime()){
+					$scope.project.dateEnd = $scope.project.timeEnd = tStart();
+				}},
+			0);
+		};
+
+		/*
+		 end changed
+		 */
+		$scope.endChanged = function(isDate){
+			$timeout(function(){
+				if(tStart().getTime() > tEnd().getTime()){
+					$scope.project.dateStart = $scope.project.timeStart = tEnd();
+				}},
+			0);
+		};
+
+		
+		/*
+		 find project-name
+		 */
+		function findName(name, callback, next){
+			// remove old extensions
+			if(!next){
+				next = 0;
+				name.trim().replace(/(\([0-9]*\))$/, '');
+			}
+			// prepare next name
+			n = next > 0 ? name  + ' (' + next + ')' : name;
+			next ++;
+			// query
+			db.query('select project by name', [['name', n, 'string']],
+			function(rows, data, querys){
+				console.log(data);
+				var exists = rows.first();
+				// update view
+				$timeout(function(){
+					$scope.project.name = n;
+				},0);
+				// 
+				if(exists){
+					findName(name, callback, next);
+				}else{
+					callback(n);
+				}
+			}, function(data){
+				console.error(data);
+				}
+			);
+		}
+
+		/*
+		 combine date and time for start
+		 */
+		function tStart(end){
+			var t = new Date(), f = $scope.project,
+			ds = f.dateStart, ts = f.timeStart,
+			de = f.dateEnd,   te = f.timeEnd;
+			if(!end){
+				t.setFullYear(ds.getFullYear(), ds.getMonth(), ds.getDate(),ts.getHours(), ts.getMinutes(), 0, 0);
+				t.setHours(ts.getHours(), ts.getMinutes(), 0, 0);
+			}else{
+				t.setFullYear(de.getFullYear(), de.getMonth(), de.getDate());
+				t.setHours(te.getHours(), te.getMinutes(), 0, 0);
+			}
+			return roundMinutes(t);
+		}
+
+		/*
+		 combine date and time for end
+		 */
+
+		function tEnd(){
+			return tStart(true);
+		}
+
+		/*
+		 round minutes
+		 */
+		function roundMinutes(d){
+			return d;
+			d.setMinutes(Math.round(d.getMinutes() / 10) * 10);
+			return d;
+		}
 
 	}]);
 
-/*
-  "id": 1,
-  "name": "First try\r\n",
-  "start": "2016-2-15 09:00:00",
-  "end": "2016-3-8 09:00:00",
-  "info": "YYYY-MM-DD HH:MM:SS",
-  "chief": "Mr. Brown",
-  "cid": 1,
-  "dateStart": "2016-04-03T23:00:00.000Z",
-  "timeStart": "1970-01-01T14:00:00.000Z",
-  "dateEnd": "2016-04-13T23:00:00.000Z",
-  "timeEnd": "1970-01-01T14:00:00.000Z"
-  
-  
-  
-  var app = angular.module('mgcrea.ngStrapDocs', ['ngAnimate', 'ngSanitize', 'mgcrea.ngStrap']);
 
-app.controller('MainCtrl', function($scope) {
-});
-
-'use strict';
-
-angular.module('mgcrea.ngStrapDocs')
-
-.controller('AlertDemoCtrl', function($scope, $templateCache, $timeout, $alert) {
-
-  $scope.alert = {title: 'Holy guacamole!', content: 'Best check yo self, you\'re not looking too good.', type: 'info'};
-
-  // Service usage
-  var myAlert = $alert({title: 'Holy guacamole!', content: 'Best check yo self, you\'re not looking too good.', placement: 'top', type: 'info', keyboard: true, show: false});
-  $scope.showAlert = function() {
-    myAlert.show(); // or myAlert.$promise.then(myAlert.show) if you use an external html template
-  };
-
-});
-
-
-  
-  
-*/
