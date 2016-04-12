@@ -1,5 +1,5 @@
 // http://stackoverflow.com/questions/24615103/angular-directives-when-and-how-to-use-compile-controller-pre-link-and-post/24615261#24615261
-angular.module('app').directive('mce', function($timeout){
+angular.module('app').directive('projectweek', function($timeout){
 	var month = {
 		
 	};
@@ -7,7 +7,7 @@ angular.module('app').directive('mce', function($timeout){
 	return {
 		restrict: 'E',
     	replace: false,
-    	template: '',
+    	templateurl: 'views/projects/directives/week.tpl.html',
 		controller: function($scope, $element, $attrs, $transclude){
             // Controller is called second.
         },

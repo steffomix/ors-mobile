@@ -3,7 +3,7 @@ controller('manageProjectCtrl',
 ['$scope', '$routeParams', '$alert', '$timeout', 'orsDb', 'toolbox', 
 	function($scope, $routeParams, $alert, $timeout, db, toolbox){
 
-		var projectId, jsc;
+		var projectId, jsc, txtColor, elColor = angular.element(document.querySelector('#project-color'));
 
 		/*
 		 init view values
@@ -14,17 +14,7 @@ controller('manageProjectCtrl',
 			projectId = parseInt($routeParams.id);
 			$scope.isUpdate = projectId ? true : false;
 			releaseForm();
-			// colorpicker
-			//jsc.init();
 
-			/*
-			 {valueElement:'project-color', 
-			 styleElement:'btn-project-color', 
-			 onFineChange:'setTextColor(this)'}
-			 */
-			/*
-			 load project by id
-			 */
 			if(projectId){
 				db.query('select project', [['id', projectId, 'int']], 
 				function (rows, data, querys){
@@ -55,28 +45,28 @@ controller('manageProjectCtrl',
 						// new name for copy
 						copyName: r.name
 					};
+					initCp(r.color);
 					setColor(r.color);
 				});
 			}else{
-				$timeout(function(){
-					// setup project defaults
-					$scope.project = {
-						id: '',
-						name: '',
-						start: d,
-						end: d,
-						info: '',
-						chief: '',
-						cid: 1, // chiefId
-						dateStart: d,
-						timeStart: d,
-						dateEnd: d,
-						timeEnd: d,
-						active: true,
-						color: 'cccccc'
-					};
-					setColor($scope.project.color);
-				}, 200);
+				$scope.project = {
+					id: '',
+					name: '',
+					start: d,
+					end: d,
+					info: '',
+					chief: '',
+					cid: 1, // chiefId
+					dateStart: d,
+					timeStart: d,
+					dateEnd: d,
+					timeEnd: d,
+					active: true,
+					color: 'cccccc'
+				};
+				initCp($scope.project.color);
+				setColor($scope.project.color);
+
 
 			}
 
@@ -86,12 +76,7 @@ controller('manageProjectCtrl',
 			db.query('select chiefs', [], function(data){
 				$scope.chiefs = data.all();
 			});
-			$scope.jsc = new jscolor(document.getElementById('project-color'), {
-				valueElement:'project-color', 
-				//styleElement:'btn-project-color',
-				width: 221,
-				height: 181}
-			);
+
 
 		})();
 
@@ -263,14 +248,6 @@ controller('manageProjectCtrl',
 			return tStart(true);
 		}
 
-		function setColor(c){
-			var e = angular.element(document.querySelector('#project-color'));
-			e.css('background-color', '#' + c);
-			// return e.css('color', '#ffffff');
-			e.css('color', toolbox.brightness($scope.project.color) < 128 ? 'ffffff' : '000000');
-
-		}
-
 		/*
 		 round minutes
 		 */
@@ -279,6 +256,30 @@ controller('manageProjectCtrl',
 			return d;
 		}
 
+		function setColor(c){
+			elColor.css('background-color', '#' + c);
+			txtColor = toolbox.brightness($scope.project.color) < 128 ? 'ffffff' : '000000';
+		}
+
+		/*
+		 colorjs
+		 */
+		function initCp(color){
+			$scope.jsc = new jscolor(document.getElementById('project-color'), {
+				valueElement:'project-color', 
+				styleElement:'btn-project-color',
+				value: color,
+				width: 221,
+				height: 181,
+				shadowBlur: 7,
+				shadowColor: 'rgba(0,0,0,0.14)',
+				onFineChange: function(){
+					elColor.css('color', txtColor);
+				}
+				
+				}
+			);
+		}
 	}]);
 
 
