@@ -1,7 +1,7 @@
 angular.module('openRentstockApp').
 controller('projectsViewCtrl', 
-	['$scope', '$location', 'orsDb', 
-	function($scope ,$location, db){
+	['$scope', '$location', '$timeout', 'orsDb', 
+	function($scope ,$location, $timeout, db){
 		
 		var dataUrl = 'projects.json',
 			ipp = 25; // items per page
@@ -20,7 +20,6 @@ controller('projectsViewCtrl',
 
 		function page(page){
 			page = getInt(page); // todo
-			
 			var tr = db.transaction();
 			
 			var q = tr.query("select projects");

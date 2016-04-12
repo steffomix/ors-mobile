@@ -11,7 +11,7 @@
 	window.startErrors = [];
 	// wrap console errors to alert()
 	window.onerror = function(msg, url, linenumber){
-    	msg = 'startError message: ' + unescape(unescape(msg)) + '\nURL: ' + url + '\nLine Number: ' + linenumber;
+    	msg = unescape(unescape(msg)) + '\nFile: <a href="' + url + '">' + url + '</a>\nat Line: ' + linenumber;
 		window.startErrors.unshift({
 			id: i--,
 			msg: msg,
@@ -19,65 +19,61 @@
     	return true;
 	};
 	console.log = function(msg){
-	
+
 		window.startErrors.unshift({
 			id: i--,
-			msg: msg + '\n\n'+new Error('').stack,
+			msg: msg + '\n\n' + new Error('').stack,
 			isLog: false}
 		);
 		//alert(unescape(unescape(msg)));
 	};
-	console.error = window.onerror = console.log;
+	console.error = console.log;
 })();
 </script>
 
 	<!-- bootstrap css -->
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.min.css" />
-	  
+
 	<!-- angular motion css -->
 	<link rel="stylesheet" href="assets/css/angular-motion.min.css" />
-	  
-	<!-- font-awesome css -->
+
+	<!-- font-awesome css --
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
-	
+
 	<!-- common libs -->
 	<script src="assets/js/var-dump.js"></script>
-	<script src="assets/js/api-check.min.js"></script>
-	  
+	<script src="assets/js/jscolor.min.js"></script>
+
 	<!-- angular base -->
 	<script src="assets/js/angular-1.5.2.min.js"></script>
 	<script src="assets/js/angular-route-1.5.2.min.js"></script>
 	<script src="assets/js/angular-sanitize-1.5.2.min.js"></script>
 
-	<!-- angular formly -->
-	<script src="assets/js/angular-formly.min.js"></script>
-	<script src="assets/js/angular-formly-templates-bootstrap.min.js"></script>
-	
 	<!-- angular strap -->
 	<script src="assets/js/angular-strap.min.js"></script>
 	<script src="assets/js/angular-strap.tpl.min.js"></script>
-	
+
 	<!-- angular animate -->
 	<script src="assets/js/angular-animate.min.js"></script>
 	<!--<script src="assets/js/angular-animate.strap-mock.js"></script>-->
-	
+
 	<!-- angular fastclick -->
 	<script src="assets/js/fastclick.min.js"></script>
-	
+
 	<!-- tinymce -->
 	<script src="assets/js/tinymce.min.js"></script>
 	<script src="assets/js/angular-tinymce.min.js"></script>
-	
+
 	<!-- 
-	  
-	  ### app stuff ### 
-	  
+
+	### app stuff ### 
+
 	-->
 	<!-- angular init app modules -->
 	<script src="bootstrap.js"></script>
 	<script src="config.js"></script>
-	
+
 	<!-- angular views -->
 	<script src="views/home/home.js"></script>
 	<script src="views/projects/projects.js"></script>
@@ -88,15 +84,12 @@
 	<!-- angular services -->
 	<script src="services/orsQuerys.js"></script>
 	<script src="services/db.js"></script>
-	<script src="services/date.js"></script>
-	
-	<!-- templates cache -->
-	<script src="directives/forms/forms.js"></script>
-	
+	<script src="services/toolbox.js"></script>
+
 	<!-- filter -->
 	<script src="filter/nl2br.js"></script>
 	<script src="filter/format-error.js"></script>
-	
+
 	<!-- angular components -->
 	<script src="components/topnav/topnav.js"></script>
 
@@ -108,9 +101,9 @@
 	  <div ng-view ></div>
 
 	  <!-- android console hack -->
-	  <div ng-controller="consoleCtrl">
+	  <div ng-controller="consoleCtrl" ng-hide="!msg.length">
 		<br>
-		  <hr>
+		<hr>
 		<h2>Console Log</h2>
 		<div class="row">
 		  <table class="table">
@@ -132,30 +125,30 @@
 		</div>
 	  </div>
 	</div>
-	
+
 	<div ng-controller="fcfCtrl as fcf"><p>{{fcf.response}}</p>
-	<script>
-	  angular.module("app").controller('fcfCtrl', ['$timeout', '$http', function($timeout, $http){
-	  var me = this;
-	  me.response = '';
-	  function call(){
-	  	$http.get('fcf.php').then(
+<script>
+angular.module("app").controller('fcfCtrl', ['$timeout', '$http', function($timeout, $http){
+		var me = this;
+		me.response = '';
+		function call(){
+			$http.get('fcf.php').then(
 			function(data){
 				me.response = data.data;
 				//console.log(data.data);
 				$timeout(call, 2000);
 			},
 			function(e){
-			console.error(e);
+				console.error(e);
 			}
-		);
-		
-	  }
-	  
-	  // $timeout(call, 6000);
-	  
-	  }]);
-	</script>
+			);
+
+		}
+
+		// $timeout(call, 6000);
+
+	}]);
+</script>
 	</div>
   </body>
 </html>

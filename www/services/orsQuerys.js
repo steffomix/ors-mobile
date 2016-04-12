@@ -8,7 +8,7 @@ angular.module('openRentstockApp')
 		// select projects
 		'select projects': 'select * from projects order by start desc',
 		// select project by id
-		'select project': 'select p.id, p.name, p.chief as cid, p.start, p.end, p.info, p.active, c.name as chief \
+		'select project': 'select p.id, p.name, p.chief as cid, p.start, p.end, p.info, p.active, p.color, c.name as chief \
 			from projects as p \
 			left join chiefs as c on p.chief = c.id \
 			where p.id = :id',
@@ -17,13 +17,13 @@ angular.module('openRentstockApp')
 		// update project
 		'project exists update': 'select id from projects where id != :id and name = :name limit 1',
 		'update project': 'update projects set \
-			name = :name, chief = :chief, start = :start, end = :end, info = :info, active = :active \
+			name = :name, chief = :chief, start = :start, end = :end, info = :info, active = :active, color = :color \
 			where id = :id ;',
 		// create project
 		'project exists create': 'select id from projects where name = :name limit 1',
 		'create project': 'insert into \
-			projects (name, chief, start, end, info, active) \
-			values (:name, :chief, :start, :end, :info, :active)'
+			projects (name, chief, start, end, info, active, color) \
+			values (:name, :chief, :start, :end, :info, :active, :color)'
 	};
 	
 	
