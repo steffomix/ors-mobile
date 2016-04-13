@@ -6,24 +6,38 @@ angular.module('openRentstockApp')
 		manage project
 		*/
 		// select projects
-		'select projects': 'select * from projects order by start desc',
+		'select projects': 
+			'SELECT * FROM projects ORDER BY start DESC',
+		//
+		'select project by date range': 
+			'SELECT p.name, p.start, p.end, c.name AS chief FROM projects AS p \
+			LEFT JOIN chiefs as c ON p.id = c.id \
+			WHERE p.start BETWEEN :tStart AND :tEnd \
+			ORDER BY p.start ASC',
 		// select project by id
-		'select project': 'select p.id, p.name, p.chief as cid, p.start, p.end, p.info, p.active, p.color, c.name as chief \
-			from projects as p \
-			left join chiefs as c on p.chief = c.id \
-			where p.id = :id',
+		'select project': 
+			'SELECT p.id, p.name, p.chief AS cid, p.start, p.end, p.info, p.active, p.color, c.name AS chief \
+			FROM projects AS p \
+			LEFT JOIN chiefs AS c on p.chief = c.id \
+			WHERE p.id = :id',
 		// select project chiefs
-		'select chiefs': 'select id, name from chiefs order by name',
+		'select chiefs': 
+			'SELECT id, name FROM chiefs ORDER BY name',
 		// update project
-		'project exists update': 'select id from projects where id != :id and name = :name limit 1',
-		'update project': 'update projects set \
+		'project exists update': 
+			'SELECT id FROM projects WHERE id != :id AND name = :name LIMIT 1',
+		//
+		'update project': 
+			'UPDATE projects set \
 			name = :name, chief = :chief, start = :start, end = :end, info = :info, active = :active, color = :color \
-			where id = :id ;',
+			WHERE id = :id ;',
 		// create project
-		'project exists create': 'select id from projects where name = :name limit 1',
-		'create project': 'insert into \
-			projects (name, chief, start, end, info, active, color) \
-			values (:name, :chief, :start, :end, :info, :active, :color)'
+		'project exists create': 
+			'SELECT id FROM projects WHERE name = :name LIMIT 1',
+		//
+		'create project': 
+			'INSERT INTO projects (name, chief, start, end, info, active, color) \
+			VALUES (:name, :chief, :start, :end, :info, :active, :color)'
 	};
 	
 	

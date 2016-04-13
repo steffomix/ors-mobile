@@ -1,7 +1,7 @@
 angular.module('openRentstockApp').
 controller('manageProjectCtrl', 
-['$scope', '$routeParams', '$alert', '$timeout', 'orsDb', 'toolbox', 
-	function($scope, $routeParams, $alert, $timeout, db, toolbox){
+['$scope', '$location', '$routeParams', '$alert', '$timeout', 'orsDb', 'toolbox', 
+	function($scope, $location, $routeParams, $alert, $timeout, db, toolbox){
 
 		var projectId, jsc, txtColor, elColor = angular.element(document.querySelector('#project-color'));
 
@@ -18,6 +18,10 @@ controller('manageProjectCtrl',
 			if(projectId){
 				db.query('select project', [['id', projectId, 'int']], 
 				function (rows, data, querys){
+					if(!rows.first()){
+						$alert({content: 'Project does not exist.', type: 'danger'});
+						return $location.path('manageProject');
+					}
 					var r = rows.first(), s = new Date(), e = new Date();
 					s.setTime(r.start);
 					roundMinutes(s);

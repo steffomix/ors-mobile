@@ -25,4 +25,3 @@ angular.module('app').directive('projectweek', function($timeout){
         }
 	};
 });
-

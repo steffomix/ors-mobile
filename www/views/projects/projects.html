@@ -1,13 +1,19 @@
 <div ng-controller="projectsViewCtrl">
   <h1>Projects</h1>
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+  <div style="padding: 0px; margin: 0px" ng-repeat="w in weeks" class="col-xs-14">
+	<div>
+	  <div style="padding: 0px; margin: 0px" class="col-xs-2" ng-repeat="d in w.days">
+		<div style="border: 1px solid #cccccc" class="col-xs-14">{{d.projects.length}}</div>
+	  </div>
+	</div>
+  </div>
+
+
+  <br><br>
+
   <table class="table">
 	<tr>
 	  <th>#</th>
@@ -17,20 +23,20 @@
 	  <th>Notiz
 	</tr>
 	<tbody ng-repeat="p in projects">
-	<tr ng-click="manageProject(p.id);">
-	  <td>{{p.id}}</td>
-	  <td>{{p.name}}</td>
-	  <td>{{p.start}}</td>
-	  <td>{{p.end}}</td>
-	  <td>{{p.info}}</td>
-	</tr>
+	  <tr ng-click="manageProject(p.id);">
+		<td><span style="background-color: #{{p.color}}; color: {{p.iCol}}; padding: 3px; border-radius: 3px">{{p.id}}</span></td>
+		<td>{{p.name}}</td>
+		<td>{{p.start}}</td>
+		<td>{{p.end}}</td>
+		<td>{{p.info}}</td>
+	  </tr>
 	</tbody>
   </table>
-  
-  
+
+
 </div>
 <!--
-  
+
 "id": 1,
 "name": "First try\r\n",
 "start": "2016-2-15 09:00:00",

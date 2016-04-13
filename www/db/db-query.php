@@ -19,8 +19,8 @@ $types = array(
 	'string' => SQLITE3_TEXT,
 	'float' => SQLITE3_FLOAT,
 	'int' => SQLITE3_INTEGER,
-	//'real' => SQLITE3_REAL,
-	'null' => SQLITE3_NULL
+	'null' => SQLITE3_NULL,
+	'blob' => SQLITE3_BLOB
 );
 
 foreach($post as $q){
