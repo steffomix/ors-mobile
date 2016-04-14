@@ -1,15 +1,65 @@
 <div ng-controller="projectsViewCtrl">
   <h1>Projects</h1>
 
+<style>
+  .projects-calendar div div div,
+  .projects-calendar div div,
+  .projects-calendar div,
+  .projects-calendar{
+  	padding: 0px;
+	margin: 0px
+	border: none;
+  }
+  
+  div.project-week {
+  	margin: 4px 0px;
+	border: 1px solid #cccccc;
+	border-radius: 4px;
+  }
+  
+  .projects-calendar div div div div.day-head {
+  	font-weight: bold;
+	border-bottom: 1px solid #aaaaaa;
+	
+  }
+  
+  .projects-calendar div div div div.day-body {
+  	
+  }
+</style>
 
-
-  <div style="padding: 0px; margin: 0px" ng-repeat="w in weeks" class="col-xs-14">
-	<div>
-	  <div style="padding: 0px; margin: 0px" class="col-xs-2" ng-repeat="d in w.days">
-		<div style="border: 1px solid #cccccc" class="col-xs-14">{{d.projects.length}}</div>
-	  </div>
+  <div  ng-repeat="w in weeks" class="projects-calendar col-xs-14">
+	<div class="col-xs-2" ng-repeat="d in w.days">
+	  <div class="col-xs-2">{{d.getDate()}}.{{d.getMonth()+1}}</div>
 	</div>
+	<div class="col-xs-14" style="border: 1px solid #cccccc; margin: 2px 0px" ng-repeat="p in w.projects">
+	  <div style="border: 1px solid #cccccc" ng-show=" 0" class="col-xs-{{p.pre * 2}}">pre</div>
+	  <div style="border: 1px solid #cccccc" class="col-xs-14">
+		#{{p.project.id}}, 
+		{{p.start.getDate()}}.{{p.start.getMonth()+1}}-{{p.end.getDate()}}.{{p.end.getMonth()+1}}, 
+		pre: {{p.pre}} day{{p.day}}, 
+		length: {{p.length}},
+		{{p.modes.one}}, {{p.modes.start}}, {{p.modes.around}}, {{p.modes.end}}
+		</div>
+	  <div style="border: 1px solid #cccccc" ng-show="0" class="col-xs-{{p.suff * 2}}">suff</div>
+	</div>
+	
   </div>
+
+
+  <!--
+  <div class ="day-head text-center">{{d.date.getDate()}}. {{d.date.getMonth()}}</div>
+  <div ng-hide="d.projects.length" class="text-center">-</div>
+  <div ng-show="d.projects.length" class="day-body col-xs-14" ng-repeat="p in d.projects">
+  <div style="background-color: #{{p.project.color}}" >
+  <span ng-show="p.project.id">
+  M{{p.mode}}, #{{p.project.id}}, L{{p.days}}, E{{p.end}}
+  </span>
+  <span ng-hide="p.project.id">-</span>
+  </div>
+
+  </div>
+  -->
 
 
   <br><br>
