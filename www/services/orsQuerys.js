@@ -10,9 +10,9 @@ angular.module('openRentstockApp')
 			'SELECT * FROM projects ORDER BY start DESC',
 		//
 		'select project by date range': 
-			'SELECT p.id, p.name, p.start, p.end, p.color, c.name AS chief FROM projects AS p \
-			LEFT JOIN chiefs as c ON p.id = c.id \
-			WHERE p.start BETWEEN :tStart AND :tEnd \
+			'SELECT p.id, p.name, p.start, p.end, p.color, c.id as cid, c.name AS chief FROM projects AS p \
+			LEFT JOIN chiefs AS c ON p.chief = c.id \
+			WHERE p.start > :tStart AND p.start < :tEnd \
 			ORDER BY p.start ASC',
 		// select project by id
 		'select project': 

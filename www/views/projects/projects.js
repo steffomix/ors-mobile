@@ -2,7 +2,8 @@ angular.module('openRentstockApp').
 controller('projectsViewCtrl', 
 ['$scope', '$location', '$timeout', 'orsDb', 'toolbox', 
 	function($scope , $location, $timeout, db, toolbox){
-		var firstDay = 0, // 0 sunday, 1 monday
+		var now = new Date(), 
+		firstDay = 0, // 0 sunday, 1 monday
 		dateStart,
 		dateEnd, 
 		tDay = 60 * 60 * 24 * 1000, 
@@ -22,11 +23,11 @@ controller('projectsViewCtrl',
 			// set time to 00:00:00
 			d.setHours(0, 0, 0, 0);
 			dateStart = d;
-			console.log(d.toJSON());
+			
 			// dateEnd
 			d = new Date();
 			// goto sunday night this week + 90 days
-			d.setDate(d.getDate() + 7 - d.getDay() + 1 + 91);
+			d.setDate(d.getDate() + 7 - d.getDay() + 1 + 181);
 			// set hour as late as possible
 			d.setHours(23, 59, 59);
 			dateEnd = d;
@@ -45,7 +46,7 @@ controller('projectsViewCtrl',
 					// create project first
 					return $location.path('manageProject');
 				}
-				var dn = 1, day, mode, start, end, prj, weeks = [];
+				var day, mode, start, end, prj, weeks = [];
 				// first week
 				var week = new Week(dateStart);
 				weeks.push(week);
@@ -74,11 +75,11 @@ controller('projectsViewCtrl',
 						}
 
 						if(mode){
-							week.addProject(new Project(new Date(parseInt(i)), r), mode);
+							week.addProject(new Project(r), mode);
 						}
 					});
 					if(new Date(i).getDay() == firstDay){
-						week = new Week();
+						week = new Week(new Date(i + tDay));
 						weeks.push(week);
 					}
 				}
@@ -90,12 +91,7 @@ controller('projectsViewCtrl',
 				// attach weeks
 				$scope.weeks = weeks;
 			});
-
-
-
 		}
-
-
 
 		/*
 		 week
@@ -125,6 +121,7 @@ controller('projectsViewCtrl',
 			prepare: function(){
 				this.projects.forEach(function(p){
 					p.processModes();
+					p.processBars();
 				});
 			}
 		};
@@ -132,32 +129,77 @@ controller('projectsViewCtrl',
 		/*
 		 project
 		 */
-		function Project(day, project, mode){
+		function Project(project){
+			this.project = project;
 			this.start = new Date(parseInt(project.start));
 			this.end = new Date(parseInt(project.end));
 			this.day = this.getDay(this.start);
-			this.mode = mode;
-
-			var days = Math.floor(project.end / tDay) - Math.floor(this.start.getTime() / tDay);
 
 			this.pre = this.day - 1;
-			this.length =  Math.min(days, 7 - this.day);
-			this.project = project;
+			this.length =  this.getLength();
+			this.fontColor = toolbox.brightness(this.project.color, true) ? '#00000ß' : '#ffffff';
 
 			this.modes = {
-				one: false,
-				start: false,
-				around: false,
-				end: false
+				one: 0,
+				start: 0,
+				around: 0,
+				end: 0
+			};
+			
+			this.bars = {
+				pre: 0,
+				start: 1,
+				length: 1,
+				hasStart: true,
+				hasEnd: true,
+				borderColor: toolbox.darken(this.project.color, 30)
 			};
 		}
 		Project.prototype = {
-			getDay: function(start){
-				var day = start.getDay() - 1;
+			processBars: function(){
+				var m = this.modes, b = this.bars;
+				if(m['one']){
+					b.start = this.day;
+					b.length = this.getLength();
+					b.hasStart = true;
+					b.hasEnd = true;
+					b.pre = this.day - 1;
+				}else if(m['around']){
+					b.start = 1;
+					b.length = 7;
+					b.hasStart = false;
+					b.hasEnd = false;
+					b.pre = 0;
+				}else if(m['start'] && m['end']){
+					b.start = this.day;
+					b.length = this.getLength() + 1;
+					b.hasStart = true;
+					b.hasEnd = true;
+					b.pre = this.day - 1;
+				}else if(m['start'] && !m['end']){
+					b.start = this.day;
+					b.length = this.getLength() + 1;
+					b.hasStart = true;
+					b.hasEnd = false;
+					b.pre = this.day -1;
+				}else if(!m['start'] && m['end']){
+					b.start = false;
+					b.length = this.getDay(this.end);
+					b.hasStart = false;
+					b.hasEnd = true;
+					b.pre = 0;
+				}
+			},
+			getDay: function(day){
+				var day = day.getDay() - 1;
 				if(day < 0){
 					day = 7 + day; // note: 6 + -n == 6 - (n * -1)
 				}
 				return day + 1;
+			},
+			getLength: function(){
+				var days = Math.floor(this.project.end / tDay) - Math.floor(this.start.getTime() / tDay);
+				return Math.min(days, 7 - this.day);
 			},
 			setMode: function(mode){
 				this.modes[mode] = mode;
@@ -167,83 +209,21 @@ controller('projectsViewCtrl',
 				if(m.around && (m.one || m.start || m.end)){
 					m.around = false;
 				}
+				if(m.one){
+					m.start = m.end = m.around = false;
+				}
 			}
 		};
-		/*
-		 Week.prototype = {
-		 addDay: function(day){
-		 this.days.push(day);
-		 },
-		 // add filler-projects to prevent colapse
-		 prepare: function(){
-		 var day, project;
-		 // fill forward
-
-		 for(var d = 0; d < this.days.length; d++){
-		 day = this.days[d];
-		 for(var p = 0; p < day.projects.length; p++){
-		 prj = day.projects[p];
-		 // calculate display length
-		 if(d == 0 || prj.mode == 2){
-		 prj.days = Math.floor(day.date.getTime() / tDay) - Math.floor(prj.project.end / tDay);
-		 prj.days = Math.max(6-d, prj.days);
-		 }
-		 // one day or end
-		 if(prj.mode == 1 || prj.mode == 4){
-		 // add filler
-		 for(var df = d + 1; df < this.days.length; df++){
-		 this.days[df].projects.splice(p, 0, new Project(0, 0));
-		 }
-		 }
-		 }
-		 }
-
-		 // fill backward
-		 for(var d = this.days.length - 1; d >= 0 ; d--){
-		 day = this.days[d];
-		 for(var p = day.projects.length - 1; p >= 0; p--){
-		 prj = day.projects[p];
-		 if(prj.mode == 1 || prj.mode == 2){
-		 // add filler
-		 for(var df = d - 1; df >= 0; df--){
-		 this.days[df].projects.splice(p + 1, 0, new Project(0, 0));
-		 }
-		 }
-		 }
-		 }
-
-		 }
-
-		 };
-		 */
-
-
-
-		/*
-		 modes:
-		 0: empty filler
-		 1: this day only
-		 2: start this day
-		 3: around this day
-		 4: end this day
-		 */
-		function _Project(day, project, mode){
-			// parent
-			this.day = day;
-			// display length
-			this.days = 1;
-			// db entry
-			this.project = project;
-			// mode (0-4)
-			this.mode = mode;
-			var d = new Date(parseInt(this.project.end));
-			this.end = this.project ? d.getDate() + '.' + d.getMonth() : '-';
-		}
+		
 		// edit project
-		$scope.manageProject = function(id){
+		$scope.onEdit = function(id){
 			$location.path('manageProject/' + id);
 		};
 
+		$scope.isNow = function(d){
+			var t1 = '' + now.getFullYear() + now.getMonth() + now.getDate();
+			return t1 == '' + d.getFullYear() + d.getMonth() + d.getDate();
+		};
 
 		function getInt(i){
 			return (isNaN(i) ? 1 : Math.abs(parseInt(i)));
@@ -257,25 +237,6 @@ controller('projectsViewCtrl',
 			}
 			return false;
 		}
-
-		/*
-		 function page(page){
-		 page = getInt(page); // todo
-		 var tr = db.transaction();
-
-		 var q = tr.query("select projects");
-		 tr.execute(function(rows){
-		 var rows = rows.all();
-		 rows.forEach(function(r, i){
-		 rows[i]['start'] = toolbox.formatDate(r.start);
-		 rows[i]['end'] = toolbox.formatDate(r.end);
-		 rows[i]['iCol'] = '#' + (toolbox.brightness(rows[i]['color'], true) ? '000000' : 'FFFFFF');
-		 });
-		 $scope.projects = rows;
-		 });
-		 }
-		 page(1);
-		 */
 
 	}]);
 

@@ -17,6 +17,20 @@ angular.module('app').factory('toolbox', function(){
 		},
 		
 		/*
+		darken css color
+		@color css hex color
+		@percent 0-100 amount in % to darken
+		@return css hex color without # prefix
+		*/
+		darken: function(color, percent){
+			var c = this.colorToRgb(color);
+			c.forEach(function(col, i){
+				c[i] = Math.max(0, Math.min(255, Math.round(col / 100 * (100 - percent))));
+			});
+			return c[0].toString(16)+c[1].toString(16)+c[2].toString(16);
+		},
+		
+		/*
 		convert html-color to rgb array
 		@color string html-color
 		@asHex bool true: hex, false: int
