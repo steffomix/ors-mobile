@@ -1,0 +1,33 @@
+<div ng-controller="eventsViewCtrl">
+  <h1>Events</h1>
+  <div  ng-repeat="w in weeks" class="events-calendar tight col-xs-14" >
+	<a id="{{w.isCurrent ? 'current'  : ''}}"></a>
+	<div class="col-xs-14 tight">
+	  <div class="ec-week col-xs-1 text-center " >{{w.date | date : 'ww'}}</div>
+	</div>
+	<div class="col-xs-2 ec-days tight text-center {{isNow(d) ? ' ec-day-now ' : ' '}} ec-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} ec-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" ng-repeat="d in w.days">
+	  <b>{{d.getDate()}}</b><small>.{{d.getMonth()+1}} {{d.getDay()}}</small>
+	</div>
+	<div class="col-xs-14 tight ec-bars-body" ng-show="w.events.length">
+
+	  <div class="col-xs-14 tight ec-bars-container" ng-repeat="e in w.events">
+		<div ng-show="e.bars.pre" class="col-xs-{{e.bars.pre * 2}} tight"></div>
+		<div ng-click="onEdit(e.event.id)" class="
+		  col-xs-{{e.bars.length * 2}} 
+		  ec-bars 
+		  {{e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-left ' : ' '}} 
+		  {{!e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-right ' : ' '}} 
+		  {{e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-inner ' : ''}}
+		  {{!e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-around ' :  ' '}}" 
+		  style="background-color: {{e.event.color}}; color: {{e.fontColor}}; border-color: #{{e.bars.borderColor}}">
+		  <b>{{e.event.name}}</b><small>
+			<span ng-show="!e.bars.hasStart || !e.bars.hasEnd" >
+			  (<span ng-show="!e.bars.hasStart">{{e.start | date : 'd.M'}}</span> - <span ng-show="!e.bars.hasEnd">{{e.end | date : 'd.M'}}</span>)
+			</span>
+			<br ng-show="e.bars.length == 1" />
+			<i>{{e.event.chief}}</i></small>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>

@@ -40,10 +40,7 @@
 
 	<!-- font-awesome css -->
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
-<style>
-  @grid-columns: 14;
-  @grid-gutter-width: 5px;
-</style>
+
 	<!-- common libs -->
 	<script src="assets/js/var-dump.js"></script>
 	<script src="assets/js/jscolor.min.js"></script>
@@ -68,20 +65,20 @@
 	<script src="assets/js/tinymce.min.js"></script>
 	<script src="assets/js/angular-tinymce.min.js"></script>
 
-	<!-- 
 
 	### app stuff ### 
 
-	-->
+	<!-- ors-app css -->
+	<link rel="stylesheet" href="assets/css/ors-app.css" />
+	
 	<!-- angular init app modules -->
 	<script src="bootstrap.js"></script>
 	<script src="config.js"></script>
 
 	<!-- angular views -->
 	<script src="views/home/home.js"></script>
-	<script   src="views/projects/projects.js"></script>
-	  <script src="views/projects/directives/week.js"></script>
-	<script src="views/manageProject/manageProject.js"></script>
+	<script src="views/events/events.js"></script>
+	<script src="views/manageEvent/manageEvent.js"></script>
 	<script src="views/articles/articles.js"></script>
 	<script src="views/bookings/bookings.js"></script>
 
@@ -96,7 +93,7 @@
 
 	<!-- angular components -->
 	<script src="components/topnav/topnav.js"></script>
-
+	
   </head>
   <body ng-app="openRentstockApp" style="overflow-y: scroll; padding-top: 60px">
 	<div ng-include="'components/topnav/topnav.html'"></div>
@@ -128,31 +125,6 @@
 		  </table>
 		</div>
 	  </div>
-	</div>
-
-	<div ng-controller="fcfCtrl as fcf"><p>{{fcf.response}}</p>
-<script>
-angular.module("app").controller('fcfCtrl', ['$timeout', '$http', function($timeout, $http){
-		var me = this;
-		me.response = '';
-		function call(){
-			$http.get('fcf.php').then(
-			function(data){
-				me.response = data.data;
-				//console.log(data.data);
-				$timeout(call, 2000);
-			},
-			function(e){
-				console.error(e);
-			}
-			);
-
-		}
-
-		// $timeout(call, 6000);
-
-	}]);
-</script>
 	</div>
   </body>
 </html>

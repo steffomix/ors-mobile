@@ -24,8 +24,8 @@
 
 	// routes
 	routes = [
-		['projects', 'projects'],
-		['manageProject/:id?', 'manageProject'],
+		['events', 'events'],
+		['manageEvent/:id?', 'manageEvent'],
 		['articles', 'articles'],
 		['bookings',  'bookings']
 	];

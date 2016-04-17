@@ -1,5 +1,5 @@
 angular.module('openRentstockApp').
-controller('projectsViewCtrl', 
+controller('eventsViewCtrl', 
 ['$scope', '$location', '$anchorScroll', '$timeout', '$filter', 'orsDb', 'toolbox', 
 	function($scope , $location, $anchorScroll, $timeout, $filter, db, toolbox){
 		var now = new Date(),
@@ -14,15 +14,14 @@ controller('projectsViewCtrl',
 		// lenth of week
 		tWeek = tDay * 7;
 		
+		// event
 		$scope.weeks = [];
 		
 		eventCalendar();
 		
-		
 		function getNow(){
 			var g = $location.search();
-			
-			return new Date(now.getTime());
+			return new Date(now);
 		}		
 
 		function eventCalendar(){
@@ -45,15 +44,15 @@ controller('projectsViewCtrl',
 			// set hour as late as possible
 			de.setHours(23, 59, 59);
 			dateEnd = de;
-			db.query('select project by date range',
+			db.query('select event by date range',
 			[
 				['tStart', dateStart.getTime(), 'string'],
 				['tEnd', dateEnd.getTime(), 'string']
 			],
 			function(rows, response, querys){
 				if(!rows){
-					// create project first
-					return $location.path('/manageProject');
+					// create event first
+					return $location.path('/manageEvent');
 				}
 				var day, mode, start, end, weeks = [];
 				// walk through days 
@@ -90,7 +89,7 @@ controller('projectsViewCtrl',
 						}
 
 						if(mode){
-							week.addProject(new Project(r), mode);
+							week.addEvent(new Event(r), mode);
 						}
 					});
 					
@@ -115,47 +114,52 @@ controller('projectsViewCtrl',
 		 */
 		function Week(date){
 			this.date = date;
-			this.current = $filter('date')(date, 'ww') == $filter('date')(now, 'ww');
+			this.isCurrent = this.isCurrentWeek(date);
 			this.days = [];
-			this.projects = [];
+			this.events = [];
 		}
 		Week.prototype = {
-			addProject: function(prj, mode){
+			isCurrentWeek: function(date){
+				var now = getNow();
+				now.setDate(now.getDate() - firstDay);
+				return $filter('date')(date, 'ww') == $filter('date')(now, 'ww');
+			},
+			addEvent: function(evt, mode){
 				var isset = false;
-				prj.setMode(mode);
-				this.projects.forEach(function(p){
-					if(prj.project.id == p.project.id){
+				evt.setMode(mode);
+				this.events.forEach(function(e){
+					if(evt.event.id == e.event.id){
 						isset = true;
-						p.setMode(mode);
+						e.setMode(mode);
 					}
 				});
 				if(!isset){
-					this.projects.push(prj);
+					this.events.push(evt);
 				}
 			},
 			addDay: function(day){
 				this.days.push(day);
 			},
 			prepare: function(){
-				this.projects.forEach(function(p){
-					p.processModes();
-					p.processBars();
+				this.events.forEach(function(e){
+					e.processModes();
+					e.processBars();
 				});
 			}
 		};
-
+		
 		/*
-		 project
+		 event
 		 */
-		function Project(project){
-			this.project = project;
-			this.start = new Date(parseInt(project.start));
-			this.end = new Date(parseInt(project.end));
+		function Event(event){
+			this.event = event;
+			this.start = new Date(parseInt(event.start));
+			this.end = new Date(parseInt(event.end));
 			this.day = this.getDay(this.start);
 
 			this.pre = this.day - 1;
 			this.length =  this.getLength();
-			this.fontColor = toolbox.brightness(this.project.color, true) ? '#00000ß' : '#ffffff';
+			this.fontColor = toolbox.brightness(event.color, true) ? '#00000ß' : '#ffffff';
 
 			this.modes = {
 				one: 0,
@@ -170,10 +174,10 @@ controller('projectsViewCtrl',
 				length: 1,
 				hasStart: true,
 				hasEnd: true,
-				borderColor: toolbox.darken(this.project.color, 30)
+				borderColor: toolbox.darken(event.color, 30)
 			};
 		}
-		Project.prototype = {
+		Event.prototype = {
 			processBars: function(){
 				var m = this.modes, b = this.bars;
 				if(m['one']){
@@ -214,15 +218,15 @@ controller('projectsViewCtrl',
 			 cause its the result of try&fail and best example of
 			 "never touch a running system"
 			*/
-			getDay: function(day){
-				var day = day.getDay() - 1;
+			getDay: function(date){
+				var day = date.getDay() - 1;
 				if(day + (1 - firstDay) < 0){
 					day = 7 + day; // note: 7 + -day == 7 - (day * -1)
 				}
 				return day + (2 - firstDay);
 			},
 			getLength: function(){
-				var days = Math.floor(this.project.end / tDay) - Math.floor(this.start.getTime() / tDay);
+				var days = Math.floor(this.event.end / tDay) - Math.floor(this.start.getTime() / tDay);
 				return Math.min(days, 7 - this.day);
 			},
 			setMode: function(mode){
@@ -239,9 +243,9 @@ controller('projectsViewCtrl',
 			}
 		};
 		
-		// edit project
+		// edit event
 		$scope.onEdit = function(id){
-			$location.path('manageProject/' + id);
+			$location.path('manageEvent/' + id);
 		};
 
 		$scope.isNow = function(d){

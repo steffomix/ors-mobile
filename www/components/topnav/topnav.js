@@ -31,8 +31,8 @@ angular.module('openRentstockApp')
 	
 	$scope.create = [
 		{
-			'text' : 'Project',
-			'href': '#/manageProject',
+			'text' : 'Event',
+			'href': '#/manageEvent',
 			'target': '_self'
 		}
 	];

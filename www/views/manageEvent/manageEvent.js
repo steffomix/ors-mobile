@@ -1,9 +1,9 @@
 angular.module('openRentstockApp').
-controller('manageProjectCtrl', 
+controller('manageEventCtrl', 
 ['$scope', '$location', '$routeParams', '$alert', '$timeout', 'orsDb', 'toolbox', 
 	function($scope, $location, $routeParams, $alert, $timeout, db, toolbox){
 
-		var projectId, jsc, txtColor, elColor = angular.element(document.querySelector('#project-color'));
+		var eventId, jsc, txtColor, elColor = angular.element(document.querySelector('#event-color'));
 
 		/*
 		 init view values
@@ -11,12 +11,12 @@ controller('manageProjectCtrl',
 		(function(){
 			var d = roundMinutes(new Date());
 			// form mode, update and copy or create
-			projectId = parseInt($routeParams.id);
-			$scope.isUpdate = projectId ? true : false;
+			eventId = parseInt($routeParams.id);
+			$scope.isUpdate = eventId ? true : false;
 			releaseForm();
 
-			if(projectId){
-				db.query('select project', [['id', projectId, 'int']], 
+			if(eventId){
+				db.query('select event', [['id', eventId, 'int']], 
 				function (rows, data, querys){
 					if(!rows.first()){
 						$alert({content: 'Project does not exist.', type: 'danger'});
@@ -27,8 +27,8 @@ controller('manageProjectCtrl',
 					roundMinutes(s);
 					e.setTime(r.end);
 					roundMinutes(e);
-					$scope.project = {
-						// project
+					$scope.event = {
+						// event
 						id: 	r.id,
 						name: 	r.name,
 						start: 	s,
@@ -53,7 +53,7 @@ controller('manageProjectCtrl',
 					setColor(r.color);
 				});
 			}else{
-				$scope.project = {
+				$scope.event = {
 					id: '',
 					name: '',
 					start: d,
@@ -68,8 +68,8 @@ controller('manageProjectCtrl',
 					active: true,
 					color: 'CCCCCC'
 				};
-				initCp($scope.project.color);
-				setColor($scope.project.color);
+				initCp($scope.event.color);
+				setColor($scope.event.color);
 
 
 			}
@@ -90,15 +90,15 @@ controller('manageProjectCtrl',
 		$scope.onUpdate = function(){
 			// lock form
 			lockForm();
-			if(!projectId){return;}
+			if(!eventId){return;}
 			if(!$scope.form.$valid){
 				// unlock form
 				releaseForm();
 				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
 			}
-			// check project exists
-			db.query('project exists update', 
-			[['id', projectId, 'int'],['name', $scope.project.name, 'string']],
+			// check event exists
+			db.query('event exists update', 
+			[['id', eventId, 'int'],['name', $scope.event.name, 'string']],
 			function(rows){
 				if(rows.first()){
 					// unlock form
@@ -106,17 +106,17 @@ controller('manageProjectCtrl',
 					return $alert({content: 'Project Name is already in use', type: 'danger' });
 				}
 				// update
-				var p = $scope.project;
-				db.query('update project', 
+				var e = $scope.event;
+				db.query('update event', 
 				[
-					['id', projectId, 'int'],
-					['name', p.name, 'string'],
-					['chief', p.cid, 'int'],
+					['id', eventId, 'int'],
+					['name', e.name, 'string'],
+					['chief', e.cid, 'int'],
 					['start', tStart().getTime(), 'string'],
 					['end', tEnd().getTime(), 'string'],
-					['info', p.info, 'string'],
-					['active', p.active, 'int'],
-					['color', p.color, 'string']
+					['info', e.info, 'string'],
+					['active', e.active, 'int'],
+					['color', e.color, 'string']
 				],
 				// unlock form
 				function(rows, data, querys){
@@ -132,15 +132,15 @@ controller('manageProjectCtrl',
 		$scope.onCreate = function(){
 			// lock form
 			lockForm();
-			if(projectId){return;}
+			if(eventId){return;}
 			if(!$scope.form.$valid){
 				// unlock form
 				releaseForm();
 				return $alert({content: 'Please re-check your Project Data.', type: 'danger'});
 			}
-			// check project exists
-			db.query('project exists create', 
-			[['name', $scope.project.name, 'string']],
+			// check event exists
+			db.query('event exists create', 
+			[['name', $scope.event.name, 'string']],
 			function(rows){
 				if(rows.first()){
 					// unlock form
@@ -148,16 +148,16 @@ controller('manageProjectCtrl',
 					return $alert({content: 'Project Name is already in use', type: 'danger' });
 				}else if(confirm('Create new Project?')){
 					// update
-					var p = $scope.project;
-					db.query('create project', 
+					var e = $scope.event;
+					db.query('create event', 
 					[
-						['name', $scope.project.name, 'string'],
-						['chief', p.cid, 'int'],
+						['name', $scope.event.name, 'string'],
+						['chief', e.cid, 'int'],
 						['start', tStart().getTime(), 'string'], // int is too short
 						['end', tEnd().getTime(), 'string'], // int is too short
-						['info', p.info, 'string'],
-						['active', p.active, 'int'],
-						['color', p.color, 'string']
+						['info', e.info, 'string'],
+						['active', e.active, 'int'],
+						['color', e.color, 'string']
 					],
 					function(rows, data, querys){
 						// unlock form
@@ -182,10 +182,10 @@ controller('manageProjectCtrl',
 			}
 			if(confirm('Create new Project?')){
 				db.findName(
-				$scope.project.name, 
-				'project exists create', 
+				$scope.event.name, 
+				'event exists create', 
 				'name', 
-				$scope.project, 
+				$scope.event, 
 				'copyName', 
 				function copy(name){
 					alert(name);
@@ -212,7 +212,7 @@ controller('manageProjectCtrl',
 		$scope.startChanged = function(isDate){
 			$timeout(function(){
 				if(tStart().getTime() > tEnd().getTime()){
-					$scope.project.dateEnd = $scope.project.timeEnd = tStart();
+					$scope.event.dateEnd = $scope.event.timeEnd = tStart();
 				}},
 			0);
 		};
@@ -223,7 +223,7 @@ controller('manageProjectCtrl',
 		$scope.endChanged = function(isDate){
 			$timeout(function(){
 				if(tStart().getTime() > tEnd().getTime()){
-					$scope.project.dateStart = $scope.project.timeStart = tEnd();
+					$scope.event.dateStart = $scope.event.timeStart = tEnd();
 				}},
 			0);
 		};
@@ -232,7 +232,7 @@ controller('manageProjectCtrl',
 		 combine date and time for start
 		 */
 		function tStart(end){
-			var t = new Date(), f = $scope.project,
+			var t = new Date(), f = $scope.event,
 			ds = f.dateStart, ts = f.timeStart,
 			de = f.dateEnd,   te = f.timeEnd;
 			if(!end){
@@ -262,16 +262,16 @@ controller('manageProjectCtrl',
 
 		function setColor(c){
 			elColor.css('background-color', '#' + c);
-			txtColor = toolbox.brightness($scope.project.color) < 128 ? 'ffffff' : '000000';
+			txtColor = toolbox.brightness($scope.event.color) < 128 ? 'ffffff' : '000000';
 		}
 
 		/*
 		 colorjs
 		 */
 		function initCp(color){
-			$scope.jsc = new jscolor(document.getElementById('project-color'), {
-				valueElement:'project-color', 
-				styleElement:'btn-project-color',
+			$scope.jsc = new jscolor(document.getElementById('event-color'), {
+				valueElement:'event-color', 
+				styleElement:'btn-event-color',
 				value: color,
 				width: 221,
 				height: 181,
@@ -285,5 +285,3 @@ controller('manageProjectCtrl',
 			);
 		}
 	}]);
-
-
