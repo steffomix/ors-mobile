@@ -1,9 +1,9 @@
 <div ng-controller="projectsViewCtrl">
-  <h1>Projects</h1>
+  <h1>Events</h1>
 
 <style>
   .projects-calendar{
-    margin: 5px 0px;
+    margin: 20px 0px;
   }
   
   .projects-calendar .tight,
@@ -19,7 +19,6 @@
   .projects-calendar .pc-week{
   	margin-left: 4px;
 	margin-bottom: -1px;
-    font-weight: bold;
   	border: 1px solid #cccccc;
 	border-width: 1px 1px 0px 1px;
 	border-color: #cccccc;
@@ -53,7 +52,7 @@
 	font-size: 20px;
 	color: red;
     border-style: dotted;
-	border-color: #ee2000;
+	border-color: #dd3000;
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
 	padding-bottom: 10px;
@@ -75,6 +74,7 @@
 	border-style: solid;
 	border-bottom-right-radius: 4px;
 	border-bottom-left-radius: 4px;
+	background-color: #fafafa;
   }
   .projects-calendar div .pc-bars-container{
   	margin-bottom: 2px;
@@ -84,16 +84,35 @@
     border-style: solid;
 	border-width: 1px 0px;
 	margin: 0px;
-	padding: 3px;
+	padding: 3px 4px;
+  }
+  
+  .projects-calendar div div .pc-bars-around{
+    opacity: .85;
+	padding: 0px;
+	margin: 0px 0px;
+	text-align: center;
+	font-size: 80%;
+	border: 0px;
+	border-radius: 1em;
+	box-shadow: inset 0px 0px 4px 4px rgba(250,250,250,1);
+	
+  }
+  
+  .projects-calendar div div .pc-bars-inner{
+    text-align: center;
+	border-width: 1px;
+	border-radius: 1em;
   }
   
   .projects-calendar div div .pc-bars-left{
-    border-left-width: 1px ;
+    border-left-width: 1px;
   	border-top-left-radius: 1em;
 	border-bottom-left-radius: 1em;
   }
   
   .projects-calendar div div .pc-bars-right{
+    text-align: right;
     border-right-width: 1px;
   	border-top-right-radius: 1em;
 	border-bottom-right-radius: 1em;
@@ -102,34 +121,33 @@
 </style>
 
   <div  ng-repeat="w in weeks" class="projects-calendar tight col-xs-14" >
+	<a id="{{w.current ? 'current'  : ''}}"></a>
 	<div class="col-xs-14 tight">
 	  <div class="pc-week col-xs-1 text-center " >{{w.date | date : 'ww'}}</div>
 	</div>
-	<div class="col-xs-2 pc-days tight text-center {{isNow(d) ? 'pc-day-now' : ''}} pc-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} pc-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" ng-repeat="d in w.days">
+	<div class="col-xs-2 pc-days tight text-center {{isNow(d) ? ' pc-day-now ' : ' '}} pc-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} pc-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" ng-repeat="d in w.days">
 	  <b>{{d.getDate()}}</b><small>.{{d.getMonth()+1}}</small>
 	</div>
 	<div class="col-xs-14 tight pc-bars-body" ng-show="w.projects.length">
 
 	  <div class="col-xs-14 tight pc-bars-container" ng-repeat="p in w.projects">
 		<div ng-show="p.bars.pre" class="col-xs-{{p.bars.pre * 2}} tight"></div>
-		<div ng-click="onEdit(p.project.id)" class="col-xs-{{p.bars.length * 2}} pc-bars {{p.bars.hasStart ? 'pc-bars-left' : 'pc-bars-left-none'}} {{p.bars.hasEnd ? 'pc-bars-right' : 'pc-bars-right-none'}}" style="background-color: #{{p.project.color}}; color: {{p.fontColor}}; border-color: #{{p.bars.borderColor}}">
-		  {{p.project.name}} [{{p.project.chief}}]
+		<div ng-click="onEdit(p.project.id)" class="
+		  col-xs-{{p.bars.length * 2}} 
+		  pc-bars 
+		  {{p.bars.hasStart && !p.bars.hasEnd ? ' pc-bars-left ' : ' '}} 
+		  {{!p.bars.hasStart && p.bars.hasEnd ? ' pc-bars-right ' : ' '}} 
+		  {{p.bars.hasStart && p.bars.hasEnd ? ' pc-bars-inner ' : ''}}
+		  {{!p.bars.hasStart && !p.bars.hasEnd ? ' pc-bars-around ' :  ' '}}" 
+		  style="background-color: {{p.project.color}}; color: {{p.fontColor}}; border-color: #{{p.bars.borderColor}}">
+		  <b>{{p.project.name}}</b><small>
+			<span ng-show="!p.bars.hasStart || !p.bars.hasEnd" >
+			  (<span ng-show="!p.bars.hasStart">{{p.start | date : 'd.M'}}</span> - <span ng-show="!p.bars.hasEnd">{{p.end | date : 'd.M'}}</span>)
+			</span>
+			<br ng-show="p.bars.length == 1" />
+			<i>{{p.project.chief}}</i></small>
 		</div>
 	  </div>
-
 	</div>
   </div>
-
 </div>
-
-<!--
-  
-{{p.bars | json}}
-
-#{{p.project.id}}, 
-{{p.start.getDate()}}.{{p.start.getMonth()+1}} - {{p.end.getDate()}}.{{p.end.getMonth()+1}}, 
-
-
-{{p.modes.one}}, {{p.modes.start}}, {{p.modes.around}}, {{p.modes.end}}
-
--->

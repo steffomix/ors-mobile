@@ -1,41 +1,50 @@
 angular.module('openRentstockApp').
 controller('projectsViewCtrl', 
-['$scope', '$location', '$timeout', 'orsDb', 'toolbox', 
-	function($scope , $location, $timeout, db, toolbox){
-		var now = new Date(), 
-		firstDay = 0, // 0 sunday, 1 monday
+['$scope', '$location', '$anchorScroll', '$timeout', '$filter', 'orsDb', 'toolbox', 
+	function($scope , $location, $anchorScroll, $timeout, $filter, db, toolbox){
+		var now = new Date(),
+		// 0 sunday, 1 monday
+		firstDay = 1, 
+		// start of calendar
 		dateStart,
+		// end of calendar
 		dateEnd, 
-		tDay = 60 * 60 * 24 * 1000, 
+		// length of day in ms
+		tDay = 60 * 60 * 24 * 1000,
+		// lenth of week
 		tWeek = tDay * 7;
+		
+		$scope.weeks = [];
+		
+		eventCalendar();
+		
+		
+		function getNow(){
+			var g = $location.search();
+			
+			return new Date(now.getTime());
+		}		
 
-		// prepare
-		(function(){
-			var d = new Date();
-			$scope.weeks = [];
-
+		function eventCalendar(){
+			var ds, de;
+			ds = getNow();
+			
 			// dateStart
 			// goto monday morning this week
-			d.setDate(d.getDate() - d.getDay() + 1 + firstDay);
-
-			// set baseDate 21 days ago
-			d.setDate(d.getDate() - 21);
+			ds.setDate(ds.getDate() - ds.getDay() + firstDay);
+			// set baseDate some days ago
+			ds.setDate(ds.getDate() - 70);
 			// set time to 00:00:00
-			d.setHours(0, 0, 0, 0);
-			dateStart = d;
+			ds.setHours(0, 0, 0, 0);
+			dateStart = ds;
 			
 			// dateEnd
-			d = new Date();
-			// goto sunday night this week + 90 days
-			d.setDate(d.getDate() + 7 - d.getDay() + 1 + 181);
+			de = getNow();
+			// goto sunday night this week + 180 days or a half year
+			de.setDate(de.getDate() + 7 - de.getDay() + 181 + firstDay);
 			// set hour as late as possible
-			d.setHours(23, 59, 59);
-			dateEnd = d;
-
-			load();
-		})();
-
-		function load(){
+			de.setHours(23, 59, 59);
+			dateEnd = de;
 			db.query('select project by date range',
 			[
 				['tStart', dateStart.getTime(), 'string'],
@@ -44,21 +53,27 @@ controller('projectsViewCtrl',
 			function(rows, response, querys){
 				if(!rows){
 					// create project first
-					return $location.path('manageProject');
+					return $location.path('/manageProject');
 				}
-				var day, mode, start, end, prj, weeks = [];
-				// first week
-				var week = new Week(dateStart);
-				weeks.push(week);
+				var day, mode, start, end, weeks = [];
+				// walk through days 
 				for(var i = dateStart.getTime(); i <= dateEnd.getTime(); i += tDay){
+					
 					day = new Date(parseInt(i));
+					
+					if(day.getDay() == firstDay){
+						
+						week = new Week(new Date(i + tDay));
+						weeks.push(week);
+					}
 					week.addDay(day);
+					
 					rows.all().forEach(function(r){
 						start = Math.floor(r.start / tDay) * tDay;
 						end = Math.floor(r.end / tDay) * tDay;
 						mode = false;
 						// this
-						if(start >= i && end < i){ 
+						if(start >= i && end < i + tDay){ 
 							mode = 'one';
 						}
 						// start
@@ -78,10 +93,7 @@ controller('projectsViewCtrl',
 							week.addProject(new Project(r), mode);
 						}
 					});
-					if(new Date(i).getDay() == firstDay){
-						week = new Week(new Date(i + tDay));
-						weeks.push(week);
-					}
+					
 				}
 
 				weeks.forEach(function(w){
@@ -90,6 +102,11 @@ controller('projectsViewCtrl',
 
 				// attach weeks
 				$scope.weeks = weeks;
+				$timeout(function(){
+					//$location.hash('current');
+					$anchorScroll.yOffset = 75;
+					$anchorScroll('current');
+				}, 100);
 			});
 		}
 
@@ -98,6 +115,7 @@ controller('projectsViewCtrl',
 		 */
 		function Week(date){
 			this.date = date;
+			this.current = $filter('date')(date, 'ww') == $filter('date')(now, 'ww');
 			this.days = [];
 			this.projects = [];
 		}
@@ -160,7 +178,7 @@ controller('projectsViewCtrl',
 				var m = this.modes, b = this.bars;
 				if(m['one']){
 					b.start = this.day;
-					b.length = this.getLength();
+					b.length = 1;
 					b.hasStart = true;
 					b.hasEnd = true;
 					b.pre = this.day - 1;
@@ -190,12 +208,18 @@ controller('projectsViewCtrl',
 					b.pre = 0;
 				}
 			},
+			/*
+			 Do not touch! :D
+			 I have no clue how and why that works
+			 cause its the result of try&fail and best example of
+			 "never touch a running system"
+			*/
 			getDay: function(day){
 				var day = day.getDay() - 1;
-				if(day < 0){
-					day = 7 + day; // note: 6 + -n == 6 - (n * -1)
+				if(day + (1 - firstDay) < 0){
+					day = 7 + day; // note: 7 + -day == 7 - (day * -1)
 				}
-				return day + 1;
+				return day + (2 - firstDay);
 			},
 			getLength: function(){
 				var days = Math.floor(this.project.end / tDay) - Math.floor(this.start.getTime() / tDay);

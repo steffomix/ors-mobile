@@ -41,6 +41,7 @@ angular.module('app').factory('toolbox', function(){
 			return asHex ? [c[1], c[2], c[3]] : [parseInt(c[1], 16), parseInt(c[2], 16), parseInt(c[3], 16)];
 		},
 		
+		
 		/*
 		format time from database int to formated date
 		@t int from Date.getTime()
@@ -51,6 +52,7 @@ angular.module('app').factory('toolbox', function(){
 			d.setTime(t);
 			return d.getDate()+'.'+d.getMonth()+'.'+d.getFullYear()+' '+d.getHours()+':'+d.getMinutes();
 		}
+		
 	};
 	
 });

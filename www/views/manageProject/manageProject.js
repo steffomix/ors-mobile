@@ -66,7 +66,7 @@ controller('manageProjectCtrl',
 					dateEnd: d,
 					timeEnd: d,
 					active: true,
-					color: 'cccccc'
+					color: 'CCCCCC'
 				};
 				initCp($scope.project.color);
 				setColor($scope.project.color);
