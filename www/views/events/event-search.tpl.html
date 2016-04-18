@@ -1,0 +1,38 @@
+
+<div class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog"> 
+	<div class="modal-content" style="overflow: auto; opacity: .9"> 
+	  <div class="modal-header">
+		<h4 class="modal-title" >Search for Events</h4>
+	  </div>
+	  <form name="form">
+
+		<!-- name -->
+		<div class="form-group col-xs-14" ng-class="{'has-error' : !form.name.$valid && !form.name.$pristine}">
+		  <label for="name">Event Name</label>
+		  <input name="name" ng-model="search.name" class="form-control" ng-minlength="3" ng-maxlength="80" type="text" required placeholder="Event" >
+		</div>
+
+		<!-- chief -->
+		<div class="form-group col-xs-14">
+		  <label for="chief">From Chief</label>
+		  <select name="chief" class="form-control" ng-model="search.cid" ng-options="chief.id as chief.name for chief in chiefs" required></select>
+		</div>
+		
+		<!-- name -->
+		<div class="form-group col-xs-14" ng-class="{'has-error' : !form.item.$valid && !form.item.$pristine}">
+		  <label for="item">Contains Item</label>
+		  <input name="item" ng-model="search.item" class="form-control" ng-maxlength="80" type="text" required placeholder="Leave empty to ignore" >
+		</div>
+		
+		<!-- submit update -->
+		<div class="form-group text-center col-xs-14" >
+		  <button id="btn-search" name="search" class="btn btn-default" ng-click="onSearch()">Search</button>
+		</div>
+	  </form>
+	  
+	</div> 
+  </div>
+</div>
+
+

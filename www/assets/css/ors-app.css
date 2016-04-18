@@ -1,4 +1,25 @@
+.datepicker.dropdown-menu {
+  width: 320px;
+  height: 285px;
+  padding: 2px;
+}
 
+.alert{
+  padding: 3px 10px;
+}
+
+.modal-backdrop
+{
+    opacity: .5 !important;
+}
+
+.modal-dialog .modal-content{
+  padding: .2em .5em;
+}
+.modal-content .modal-header{
+  margin-bottom: .5em;
+  padding: 5px;
+}
 
 .events-calendar{
     margin: 20px 0px;

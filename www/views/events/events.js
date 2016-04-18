@@ -1,7 +1,6 @@
-angular.module('openRentstockApp').
-controller('eventsViewCtrl', 
-['$scope', '$location', '$anchorScroll', '$timeout', '$filter', 'orsDb', 'toolbox', 
-	function($scope , $location, $anchorScroll, $timeout, $filter, db, toolbox){
+angular.module('openRentstockApp').controller('eventsViewCtrl', 
+['$scope', '$http', '$location', '$anchorScroll', '$timeout', '$filter', '$modal', 'orsDb', 'toolbox', 
+	function($scope, $http, $location, $anchorScroll, $timeout, $filter, $modal, db, toolbox){
 		var now = new Date(),
 		// 0 sunday, 1 monday
 		firstDay = 1, 
@@ -12,22 +11,57 @@ controller('eventsViewCtrl',
 		// length of day in ms
 		tDay = 60 * 60 * 24 * 1000,
 		// lenth of week
-		tWeek = tDay * 7;
+		tWeek = tDay * 7,
+		// preload searchform
+		searchForm;
+		
+		
+		/*
+		$scope
+		*/
+		$scope.chiefs = [];
 		
 		// event
 		$scope.weeks = [];
 		
+		$scope.search = {
+			name: 'event',
+			cid: 0,
+			item: 'item'
+		};
+
+		// show event calendar by default
 		eventCalendar();
-		
+
 		function getNow(){
 			var g = $location.search();
 			return new Date(now);
 		}		
 
+		/*
+		 load chiefs for pulldown
+		 */
+		db.query('select chiefs', [], function(result){
+			var c = result.all();
+			c.unshift({id: 0, name: 'Ignore'});
+			$scope.chiefs =  c;
+
+		});
+
+
+		searchModal = $modal({
+			templateUrl: 'views/events/event-search.tpl.html' , 
+			scope:$scope,
+			show: false});
+
+		$scope.onShowSearchModal = function(){
+			searchModal.$promise.then(searchModal.show);
+		};
+
 		function eventCalendar(){
 			var ds, de;
 			ds = getNow();
-			
+
 			// dateStart
 			// goto monday morning this week
 			ds.setDate(ds.getDate() - ds.getDay() + firstDay);
@@ -36,7 +70,7 @@ controller('eventsViewCtrl',
 			// set time to 00:00:00
 			ds.setHours(0, 0, 0, 0);
 			dateStart = ds;
-			
+
 			// dateEnd
 			de = getNow();
 			// goto sunday night this week + 180 days or a half year
@@ -57,16 +91,16 @@ controller('eventsViewCtrl',
 				var day, mode, start, end, weeks = [];
 				// walk through days 
 				for(var i = dateStart.getTime(); i <= dateEnd.getTime(); i += tDay){
-					
+
 					day = new Date(parseInt(i));
-					
+
 					if(day.getDay() == firstDay){
-						
+
 						week = new Week(new Date(i + tDay));
 						weeks.push(week);
 					}
 					week.addDay(day);
-					
+
 					rows.all().forEach(function(r){
 						start = Math.floor(r.start / tDay) * tDay;
 						end = Math.floor(r.end / tDay) * tDay;
@@ -92,7 +126,7 @@ controller('eventsViewCtrl',
 							week.addEvent(new Event(r), mode);
 						}
 					});
-					
+
 				}
 
 				weeks.forEach(function(w){
@@ -147,7 +181,7 @@ controller('eventsViewCtrl',
 				});
 			}
 		};
-		
+
 		/*
 		 event
 		 */
@@ -167,7 +201,7 @@ controller('eventsViewCtrl',
 				around: 0,
 				end: 0
 			};
-			
+
 			this.bars = {
 				pre: 0,
 				start: 1,
@@ -203,7 +237,7 @@ controller('eventsViewCtrl',
 					b.length = this.getLength() + 1;
 					b.hasStart = true;
 					b.hasEnd = false;
-					b.pre = this.day -1;
+					b.pre = this.day - 1;
 				}else if(!m['start'] && m['end']){
 					b.start = false;
 					b.length = this.getDay(this.end);
@@ -217,7 +251,7 @@ controller('eventsViewCtrl',
 			 I have no clue how and why that works
 			 cause its the result of try&fail and best example of
 			 "never touch a running system"
-			*/
+			 */
 			getDay: function(date){
 				var day = date.getDay() - 1;
 				if(day + (1 - firstDay) < 0){
@@ -242,7 +276,7 @@ controller('eventsViewCtrl',
 				}
 			}
 		};
-		
+
 		// edit event
 		$scope.onEdit = function(id){
 			$location.path('manageEvent/' + id);
@@ -252,6 +286,7 @@ controller('eventsViewCtrl',
 			var t1 = '' + now.getFullYear() + now.getMonth() + now.getDate();
 			return t1 == '' + d.getFullYear() + d.getMonth() + d.getDate();
 		};
+
 
 		function getInt(i){
 			return (isNaN(i) ? 1 : Math.abs(parseInt(i)));

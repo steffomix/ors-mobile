@@ -2,6 +2,11 @@
   <h1>Events</h1>
   <div  ng-repeat="w in weeks" class="events-calendar tight col-xs-14" >
 	<a id="{{w.isCurrent ? 'current'  : ''}}"></a>
+	<div ng-show="w.isCurrent" class="col-xs-14 text-center" style="margin: 1em">
+	  <div style="padding: .5em 2em" ng-click="onShowSearchModal()">
+	  	<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+	  </div>
+	</div>
 	<div class="col-xs-14 tight">
 	  <div class="ec-week col-xs-1 text-center " >{{w.date | date : 'ww'}}</div>
 	</div>
