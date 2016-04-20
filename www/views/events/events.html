@@ -1,23 +1,45 @@
 <div ng-controller="eventsViewCtrl">
   <h1>Events</h1>
+  <!-- events weeks -->
   <div  ng-repeat="w in weeks" class="events-calendar tight col-xs-14" >
+	
+	<!-- anchor current week -->
 	<a id="{{w.isCurrent ? 'current'  : ''}}"></a>
+	
+	<!-- search -->
 	<div ng-show="w.isCurrent" class="col-xs-14 text-center" style="margin: 1em">
-	  <div style="padding: .5em 2em" ng-click="onShowSearchModal()">
-	  	<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+	  <!-- show search modal -->
+	  <div class="col-xs-3" ng-click="onClickSearchModal()">
+		<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+	  </div>
+	  <!-- show calendar -->
+	  <div class="form-group col-xs-5 text-center">
+		<label class="control-label col-xs-14"><i class="fa fa-calendar"></i> Leave</label>
+		<div id="date-start" class="form-group col-xs-8">
+		  <input name="dateStart" type="text" class="form-control" ng-model="event.dateStart" ng-change="startChanged(true)" bs-datepicker>
+		</div>
 	  </div>
 	</div>
+	
+	<!-- current week -->
 	<div class="col-xs-14 tight">
 	  <div class="ec-week col-xs-1 text-center " >{{w.date | date : 'ww'}}</div>
 	</div>
-	<div class="col-xs-2 ec-days tight text-center {{isNow(d) ? ' ec-day-now ' : ' '}} ec-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} ec-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" ng-repeat="d in w.days">
-	  <b>{{d.getDate()}}</b><small>.{{d.getMonth()+1}} {{d.getDay()}}</small>
+	
+	<!-- days of week -->
+	<div ng-repeat="d in w.days" class="col-xs-2 ec-days tight text-center {{isNow(d) ? ' ec-day-now ' : ' '}} ec-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} ec-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" >
+	  <b>{{d.getDate()}}</b><small>.{{d.getMonth()+1}}</small>
 	</div>
+	
+	<!-- event body -->
 	<div class="col-xs-14 tight ec-bars-body" ng-show="w.events.length">
-
+	  <!-- bar container -->
 	  <div class="col-xs-14 tight ec-bars-container" ng-repeat="e in w.events">
+		<!-- left distance bars -->
 		<div ng-show="e.bars.pre" class="col-xs-{{e.bars.pre * 2}} tight"></div>
-		<div ng-click="onEdit(e.event.id)" class="
+		
+		<!-- bars -->
+		<div ng-click="onClickEvent(e.event.id)" class="
 		  col-xs-{{e.bars.length * 2}} 
 		  ec-bars 
 		  {{e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-left ' : ' '}} 
@@ -25,6 +47,8 @@
 		  {{e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-inner ' : ''}}
 		  {{!e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-around ' :  ' '}}" 
 		  style="background-color: {{e.event.color}}; color: {{e.fontColor}}; border-color: #{{e.bars.borderColor}}">
+		  
+		  <!-- bars content -->
 		  <b>{{e.event.name}}</b><small>
 			<span ng-show="!e.bars.hasStart || !e.bars.hasEnd" >
 			  (<span ng-show="!e.bars.hasStart">{{e.start | date : 'd.M'}}</span> - <span ng-show="!e.bars.hasEnd">{{e.end | date : 'd.M'}}</span>)

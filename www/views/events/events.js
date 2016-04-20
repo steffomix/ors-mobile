@@ -1,64 +1,89 @@
 angular.module('openRentstockApp').controller('eventsViewCtrl', 
-['$scope', '$http', '$location', '$anchorScroll', '$timeout', '$filter', '$modal', 'orsDb', 'toolbox', 
-	function($scope, $http, $location, $anchorScroll, $timeout, $filter, $modal, db, toolbox){
-		var now = new Date(),
+['$scope', '$http', '$q', '$location', '$anchorScroll', '$timeout', '$filter', '$modal', 'orsDb', 'toolbox', 
+	function($scope, $http, $q, $location, $anchorScroll, $timeout, $filter, $modal, db, toolbox){
+
+		// do not use directly
+		// use getNow()
+		var now = new Date();
 		// 0 sunday, 1 monday
-		firstDay = 1, 
+		var firstDay = 1;
 		// start of calendar
-		dateStart,
+		var dateStart;
 		// end of calendar
-		dateEnd, 
+		var dateEnd;
 		// length of day in ms
-		tDay = 60 * 60 * 24 * 1000,
+		var tDay = 60 * 60 * 24 * 1000;
 		// lenth of week
-		tWeek = tDay * 7,
+		var tWeek = tDay * 7;
 		// preload searchform
-		searchForm;
-		
-		
-		/*
-		$scope
-		*/
+		var searchModal = $modal({templateUrl: 'views/events/event-search.tpl.html', scope:$scope, show: false});
+		// scope
 		$scope.chiefs = [];
-		
-		// event
 		$scope.weeks = [];
-		
 		$scope.search = {
 			name: 'event',
 			cid: 0,
 			item: 'item'
 		};
+		// events
+		$scope.onClickSearchModal = onClickSearchModal;
+		$scope.onClickEvent = onClickEvent;
+		$scope.isNow = isNow;
 
-		// show event calendar by default
-		eventCalendar();
+		// load data and render event calentar
+		$q.all([db.query('select chiefs', []), loadEvents()]).then(
+		function(response){
+			// update chiefs
+			var chiefs = response[0].all(), ign = {id: 0, name: 'Ignore'};
+			if(chiefs){
+				chiefs.unshift(ign);
+				$scope.chiefs = chiefs;
+			}else{
+				$scope.chiefs = [ign];
+			}
+			// render calendar
+			renderEvents(response[1].all());
+		}, 
+		function(e){
+			console.error(e);
+		});
 
+
+		function onClickSearchModal(){
+			searchModal.$promise.then(searchModal.show);
+		};
+
+		function onClickEvent(id){
+			$location.path('manageEvent/' + id);
+		};
+
+		/*
+		 date depending on hash request
+		 */
 		function getNow(){
 			var g = $location.search();
 			return new Date(now);
 		}		
 
-		/*
-		 load chiefs for pulldown
-		 */
-		db.query('select chiefs', [], function(result){
-			var c = result.all();
-			c.unshift({id: 0, name: 'Ignore'});
-			$scope.chiefs =  c;
-
-		});
 
 
-		searchModal = $modal({
-			templateUrl: 'views/events/event-search.tpl.html' , 
-			scope:$scope,
-			show: false});
 
-		$scope.onShowSearchModal = function(){
-			searchModal.$promise.then(searchModal.show);
+		function isNow(d){
+			var t1 = '' + now.getFullYear() + now.getMonth() + now.getDate();
+			return t1 == '' + d.getFullYear() + d.getMonth() + d.getDate();
 		};
 
-		function eventCalendar(){
+
+		function loadEvents(){
+			calcDateRange();
+			return db.query('select event by date range',
+			[
+				['tStart', dateStart.getTime(), 'string'],
+				['tEnd', dateEnd.getTime(), 'string']
+			]);
+		}
+
+		function calcDateRange(){
 			var ds, de;
 			ds = getNow();
 
@@ -78,69 +103,94 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			// set hour as late as possible
 			de.setHours(23, 59, 59);
 			dateEnd = de;
-			db.query('select event by date range',
-			[
-				['tStart', dateStart.getTime(), 'string'],
-				['tEnd', dateEnd.getTime(), 'string']
-			],
-			function(rows, response, querys){
-				if(!rows){
-					// create event first
-					return $location.path('/manageEvent');
+
+		}
+
+		function renderEvents(events){
+			if(!events){
+				// create event first
+				return $location.path('/manageEvent');
+			}
+			
+			var day, mode, start, end, weeks = [], dayMap = {};
+			/*
+			//walk through weeks
+			for(var i = dateStart.getTime(); i <= dateEnd.getTime() + tWeek; i += tWeek){
+
+				day = new Date(parseInt(i));
+				dayMap['d'+i] = day();
+				if(day.getDay() == firstDay){
+
+					week = new Week(new Date(i + tDay));
+					weeks.push(week);
 				}
-				var day, mode, start, end, weeks = [];
-				// walk through days 
-				for(var i = dateStart.getTime(); i <= dateEnd.getTime(); i += tDay){
+				week.addDay(day);
+			}
+			
+			*/
+			 
+			
+			
+			
+			
+			
+			
+			
+			
 
-					day = new Date(parseInt(i));
+			
+			// walk through days 
+			for(var i = dateStart.getTime(); i <= dateEnd.getTime(); i += tDay){
 
-					if(day.getDay() == firstDay){
+				day = new Date(parseInt(i));
 
-						week = new Week(new Date(i + tDay));
-						weeks.push(week);
+				if(day.getDay() == firstDay){
+
+					week = new Week(new Date(i + tDay));
+					weeks.push(week);
+				}
+				week.addDay(day);
+
+				events.forEach(function(r){
+					start = Math.floor(r.start / tDay) * tDay;
+					end = Math.floor(r.end / tDay) * tDay;
+					mode = false;
+					// this
+					if(start >= i && end < i + tDay){ 
+						mode = 'one';
 					}
-					week.addDay(day);
+					// start
+					if(start >= i && start < i + tDay && end > i + tDay){
+						mode = 'start';
+					}
+					// around
+					if(start < i && end > i + tDay){
+						mode = 'around';
+					}
+					// end
+					if(start < i && end >= i && end < i + tDay){
+						mode = 'end';
+					}
 
-					rows.all().forEach(function(r){
-						start = Math.floor(r.start / tDay) * tDay;
-						end = Math.floor(r.end / tDay) * tDay;
-						mode = false;
-						// this
-						if(start >= i && end < i + tDay){ 
-							mode = 'one';
-						}
-						// start
-						if(start >= i && start < i + tDay && end > i + tDay){
-							mode = 'start';
-						}
-						// around
-						if(start < i && end > i + tDay){
-							mode = 'around';
-						}
-						// end
-						if(start < i && end >= i && end < i + tDay){
-							mode = 'end';
-						}
-
-						if(mode){
-							week.addEvent(new Event(r), mode);
-						}
-					});
-
-				}
-
-				weeks.forEach(function(w){
-				 	w.prepare();
+					if(mode){
+						week.addEvent(new Event(r), mode);
+					}
 				});
 
-				// attach weeks
-				$scope.weeks = weeks;
-				$timeout(function(){
-					//$location.hash('current');
-					$anchorScroll.yOffset = 75;
-					$anchorScroll('current');
-				}, 100);
+			}
+
+			// prepare data for scope
+			weeks.forEach(function(w){
+				w.prepare();
 			});
+			// attach weeks to scope
+			$scope.weeks = weeks;
+
+			// scroll to current week
+			$timeout(function(){
+				$anchorScroll.yOffset = 75;
+				$anchorScroll('current');
+			}, 0);
 		}
 
 		/*
@@ -181,7 +231,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 				});
 			}
 		};
-
+		
 		/*
 		 event
 		 */
@@ -277,29 +327,8 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			}
 		};
 
-		// edit event
-		$scope.onEdit = function(id){
-			$location.path('manageEvent/' + id);
-		};
-
-		$scope.isNow = function(d){
-			var t1 = '' + now.getFullYear() + now.getMonth() + now.getDate();
-			return t1 == '' + d.getFullYear() + d.getMonth() + d.getDate();
-		};
 
 
-		function getInt(i){
-			return (isNaN(i) ? 1 : Math.abs(parseInt(i)));
-		};
-
-		function inArray(ar, nd){
-			for(var i = 0; i < ar.length; i++){
-				if(ar[i] == nd){
-					return i;
-				}
-			}
-			return false;
-		}
 
 	}]);
 
