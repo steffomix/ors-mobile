@@ -1,10 +1,13 @@
+<div paginate pageLength="{{paginate.pageLength}}"></div>
+
+
 <div ng-controller="eventsViewCtrl">
   <h1>Events</h1>
   <!-- events weeks -->
   <div  ng-repeat="w in weeks" class="events-calendar tight col-xs-14" >
 	
 	<!-- anchor current week -->
-	<a id="{{w.isCurrent ? 'current'  : ''}}"></a>
+	<a id="{{ :: w.isCurrent ? 'current'  : ''}}"></a>
 	
 	<!-- search -->
 	<div ng-show="w.isCurrent" class="col-xs-14 text-center" style="margin: 1em">
@@ -23,12 +26,12 @@
 	
 	<!-- current week -->
 	<div class="col-xs-14 tight">
-	  <div class="ec-week col-xs-1 text-center " >{{w.date | date : 'ww'}}</div>
+	  <div class="ec-week col-xs-1 text-center " >{{ :: w.date | date : 'ww'}}</div>
 	</div>
 	
 	<!-- days of week -->
-	<div ng-repeat="d in w.days" class="col-xs-2 ec-days tight text-center {{isNow(d) ? ' ec-day-now ' : ' '}} ec-days-{{$first ? 'first' : $last ? 'last' : 'middle'}} ec-days-month-{{(d | date : 'M') %2 ? 'even' : 'uneven'}}" >
-	  <b>{{d.getDate()}}</b><small>.{{d.getMonth()+1}}</small>
+	<div ng-repeat="d in w.days" class="col-xs-2 ec-days tight text-center {{ :: d.isNow() ? ' ec-day-now ' : ' '}} ec-days-{{ :: $first ? 'first' : $last ? 'last' : 'middle'}} ec-days-month-{{ :: (d | date : 'M') %2 ? 'even' : 'uneven'}}" >
+	  <b>{{ :: d.date.getDate()}}</b><small>.{{ ::  d.date.getMonth() +  1}}</small><div ng-show="d.isNow()"><small>{{::d.date.getFullYear()}}</small></div>
 	</div>
 	
 	<!-- event body -->
@@ -36,27 +39,62 @@
 	  <!-- bar container -->
 	  <div class="col-xs-14 tight ec-bars-container" ng-repeat="e in w.events">
 		<!-- left distance bars -->
-		<div ng-show="e.bars.pre" class="col-xs-{{e.bars.pre * 2}} tight"></div>
+		<div ng-show="e.bars.pre" class="col-xs-{{ :: e.bars.pre * 2}} tight"></div>
 		
 		<!-- bars -->
 		<div ng-click="onClickEvent(e.event.id)" class="
-		  col-xs-{{e.bars.length * 2}} 
+		  col-xs-{{ :: e.bars.length * 2}} 
 		  ec-bars 
-		  {{e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-left ' : ' '}} 
-		  {{!e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-right ' : ' '}} 
-		  {{e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-inner ' : ''}}
-		  {{!e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-around ' :  ' '}}" 
-		  style="background-color: {{e.event.color}}; color: {{e.fontColor}}; border-color: #{{e.bars.borderColor}}">
+		  {{ :: e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-left ' : ' '}} 
+		  {{ :: !e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-right ' : ' '}} 
+		  {{ :: e.bars.hasStart && e.bars.hasEnd ? ' ec-bars-inner ' : ''}}
+		  {{ :: !e.bars.hasStart && !e.bars.hasEnd ? ' ec-bars-around ' :  ' '}}" 
+		  style="background-color: {{ :: e.event.color}}; color: {{ :: e.fontColor}}; border-color: #{{ :: e.bars.borderColor}}">
 		  
 		  <!-- bars content -->
-		  <b>{{e.event.name}}</b><small>
+		  <b>{{ :: e.event.name}}</b><small>
 			<span ng-show="!e.bars.hasStart || !e.bars.hasEnd" >
-			  (<span ng-show="!e.bars.hasStart">{{e.start | date : 'd.M'}}</span> - <span ng-show="!e.bars.hasEnd">{{e.end | date : 'd.M'}}</span>)
+			  (<span ng-show="!e.bars.hasStart">{{ :: e.start | date : 'd.M'}}</span> - <span ng-show="!e.bars.hasEnd">{{ :: e.end | date : 'd.M'}}</span>)
 			</span>
 			<br ng-show="e.bars.length == 1" />
-			<i>{{e.event.chief}}</i></small>
+			<i>{{ :: e.event.chief}}</i></small>
 		</div>
 	  </div>
 	</div>
   </div>
 </div>
+&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+<br />&nbsp;
+

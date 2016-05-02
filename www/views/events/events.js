@@ -28,8 +28,18 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 		// events
 		$scope.onClickSearchModal = onClickSearchModal;
 		$scope.onClickEvent = onClickEvent;
-		$scope.isNow = isNow;
+		//$scope.isNow = isNow;
 
+		$scope.paginate = {
+			pageLength: 123
+		};
+		
+		$timeout(function(){
+			$scope.paginate.pageLength = 234;
+		}, 5000);
+		
+		return;
+		
 		// load data and render event calentar
 		$q.all([db.query('select chiefs', []), loadEvents()]).then(
 		function(response){
@@ -47,7 +57,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 		function(e){
 			console.error(e);
 		});
-
+		
 
 		function onClickSearchModal(){
 			searchModal.$promise.then(searchModal.show);
@@ -63,15 +73,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 		function getNow(){
 			var g = $location.search();
 			return new Date(now);
-		}		
-
-
-
-
-		function isNow(d){
-			var t1 = '' + now.getFullYear() + now.getMonth() + now.getDate();
-			return t1 == '' + d.getFullYear() + d.getMonth() + d.getDate();
-		};
+		}	
 
 
 		function loadEvents(){
@@ -91,7 +93,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			// goto monday morning this week
 			ds.setDate(ds.getDate() - ds.getDay() + firstDay);
 			// set baseDate some days ago
-			ds.setDate(ds.getDate() - 70);
+			ds.setDate(ds.getDate() - 35);
 			// set time to 00:00:00
 			ds.setHours(0, 0, 0, 0);
 			dateStart = ds;
@@ -99,7 +101,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			// dateEnd
 			de = getNow();
 			// goto sunday night this week + 180 days or a half year
-			de.setDate(de.getDate() + 7 - de.getDay() + 181 + firstDay);
+			de.setDate(de.getDate() + 7 - de.getDay() + 1 + firstDay + 140);
 			// set hour as late as possible
 			de.setHours(23, 59, 59);
 			dateEnd = de;
@@ -111,87 +113,84 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 				// create event first
 				return $location.path('/manageEvent');
 			}
-			
-			var day, mode, start, end, weeks = [], dayMap = {};
-			/*
+
+			var mode, start, end, weekEnd, weeks = [], remove = [], rm;
+
 			//walk through weeks
 			for(var i = dateStart.getTime(); i <= dateEnd.getTime() + tWeek; i += tWeek){
 
-				day = new Date(parseInt(i));
-				dayMap['d'+i] = day();
-				if(day.getDay() == firstDay){
+				week = new Week(new Date(i));
+				weeks.push(week);
+				weekEnd = i + tWeek;
 
-					week = new Week(new Date(i + tDay));
-					weeks.push(week);
-				}
-				week.addDay(day);
-			}
-			
-			*/
-			 
-			
-			
-			
-			
-			
-			
-			
-			
-
-			
-			// walk through days 
-			for(var i = dateStart.getTime(); i <= dateEnd.getTime(); i += tDay){
-
-				day = new Date(parseInt(i));
-
-				if(day.getDay() == firstDay){
-
-					week = new Week(new Date(i + tDay));
-					weeks.push(week);
-				}
-				week.addDay(day);
-
-				events.forEach(function(r){
-					start = Math.floor(r.start / tDay) * tDay;
-					end = Math.floor(r.end / tDay) * tDay;
+				for(var idx = 0; idx < events.length; idx++){
+					evt = events[idx];
+					start = Math.floor(evt.start / tDay) * tDay;
+					end = Math.floor(evt.end / tDay) * tDay;
 					mode = false;
 					// this
-					if(start >= i && end < i + tDay){ 
-						mode = 'one';
+					if(start >= i && end < weekEnd){ 
+						mode = 'within';
 					}
 					// start
-					if(start >= i && start < i + tDay && end > i + tDay){
+					if(start >= i && start < weekEnd && end >= weekEnd){
 						mode = 'start';
 					}
 					// around
-					if(start < i && end > i + tDay){
+					if(start < i && end >= weekEnd){
 						mode = 'around';
 					}
 					// end
-					if(start < i && end >= i && end < i + tDay){
+					if(start < i && end >= i && end < weekEnd){
 						mode = 'end';
 					}
 
 					if(mode){
-						week.addEvent(new Event(r), mode);
+						// add event to render
+						week.addEvent(evt, mode);
+
+						if(mode == 'one' || mode == 'end'){
+							// add events for remove
+							remove.push(idx);
+						}
 					}
-				});
 
+					if(evt.start > weekEnd){
+						// no more events for this week
+						break;
+					}
+				}
+
+				// remove events out of date
+				while((rm = remove.pop())){
+					events.splice(rm, 1);
+				}
 			}
-
-			// prepare data for scope
-			weeks.forEach(function(w){
-				w.prepare();
-			});
-			// attach weeks to scope
-			$scope.weeks = weeks;
-
+			$anchorScroll.yOffset = 75;
+			//$scope.weeks = weeks;
+			applyCalendar(weeks);
 			// scroll to current week
-			$timeout(function(){
-				$anchorScroll.yOffset = 75;
-				$anchorScroll('current');
-			}, 0);
+
+
 		}
+		
+		
+		function applyCalendar(weeks){
+			var w = weeks.shift();
+			if(w){
+				$timeout(function(){
+					$scope.weeks.push(w);
+					applyCalendar(weeks);
+					if(w.isCurrentWeek(w.date)){
+						$timeout(function(){
+							$anchorScroll('current');
+						}, 0);
+					}
+				}, 0);
+			}
+		}
+		
+		
 
 		/*
 		 week
@@ -199,7 +198,7 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 		function Week(date){
 			this.date = date;
 			this.isCurrent = this.isCurrentWeek(date);
-			this.days = [];
+			this.days = this.addDays(date.getTime());
 			this.events = [];
 		}
 		Week.prototype = {
@@ -209,34 +208,35 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 				return $filter('date')(date, 'ww') == $filter('date')(now, 'ww');
 			},
 			addEvent: function(evt, mode){
-				var isset = false;
-				evt.setMode(mode);
-				this.events.forEach(function(e){
-					if(evt.event.id == e.event.id){
-						isset = true;
-						e.setMode(mode);
-					}
-				});
-				if(!isset){
-					this.events.push(evt);
+				this.events.push(new Event(evt, mode));
+			},
+			addDays: function(t){
+				var days = [];
+				for(var i = 1; i <= 7; i++){
+					days.push(new Day(new Date(t)));
+					t += tDay;
 				}
-			},
-			addDay: function(day){
-				this.days.push(day);
-			},
-			prepare: function(){
-				this.events.forEach(function(e){
-					e.processModes();
-					e.processBars();
-				});
+				return days;
 			}
 		};
-		
+
+		function Day(date){
+			this.date = date;
+		}
+		Day.prototype = {
+			isNow: function(){
+				var t1 = '' + this.now.getFullYear() + this.now.getMonth() + this.now.getDate();
+				return t1 == '' + this.date.getFullYear() + this.date.getMonth() + this.date.getDate();
+			},
+			now: getNow()
+		};
 		/*
 		 event
 		 */
-		function Event(event){
+		function Event(event, mode){
+			// console.log(['Events', event, mode]);
 			this.event = event;
+
 			this.start = new Date(parseInt(event.start));
 			this.end = new Date(parseInt(event.end));
 			this.day = this.getDay(this.start);
@@ -244,13 +244,6 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			this.pre = this.day - 1;
 			this.length =  this.getLength();
 			this.fontColor = toolbox.brightness(event.color, true) ? '#00000ß' : '#ffffff';
-
-			this.modes = {
-				one: 0,
-				start: 0,
-				around: 0,
-				end: 0
-			};
 
 			this.bars = {
 				pre: 0,
@@ -260,41 +253,39 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 				hasEnd: true,
 				borderColor: toolbox.darken(event.color, 30)
 			};
+			this.bars = this.processBars(mode);
 		}
 		Event.prototype = {
-			processBars: function(){
-				var m = this.modes, b = this.bars;
-				if(m['one']){
-					b.start = this.day;
-					b.length = 1;
-					b.hasStart = true;
-					b.hasEnd = true;
-					b.pre = this.day - 1;
-				}else if(m['around']){
+			processBars: function(mode){
+				var b = {
+					borderColor: toolbox.darken(this.event.color, 30)
+				};
+				if(mode == 'around'){
+					b.pre = 0;
 					b.start = 1;
 					b.length = 7;
 					b.hasStart = false;
 					b.hasEnd = false;
-					b.pre = 0;
-				}else if(m['start'] && m['end']){
+				}else if(mode == 'within'){
+					b.pre = this.day - 1;
 					b.start = this.day;
 					b.length = this.getLength() + 1;
 					b.hasStart = true;
 					b.hasEnd = true;
+				}else if(mode == 'start'){
 					b.pre = this.day - 1;
-				}else if(m['start'] && !m['end']){
 					b.start = this.day;
 					b.length = this.getLength() + 1;
 					b.hasStart = true;
 					b.hasEnd = false;
-					b.pre = this.day - 1;
-				}else if(!m['start'] && m['end']){
+				}else if(mode == 'end'){
+					b.pre = 0;
 					b.start = false;
 					b.length = this.getDay(this.end);
 					b.hasStart = false;
 					b.hasEnd = true;
-					b.pre = 0;
 				}
+				return b;
 			},
 			/*
 			 Do not touch! :D
@@ -303,11 +294,11 @@ angular.module('openRentstockApp').controller('eventsViewCtrl',
 			 "never touch a running system"
 			 */
 			getDay: function(date){
-				var day = date.getDay() - 1;
-				if(day + (1 - firstDay) < 0){
-					day = 7 + day; // note: 7 + -day == 7 - (day * -1)
+				var day = date.getDay();
+				if(day + firstDay < 0){
+					day = 6 + day; // note: 7 + -day == 7 - (day * -1)
 				}
-				return day + (2 - firstDay);
+				return day + (1 - firstDay);
 			},
 			getLength: function(){
 				var days = Math.floor(this.event.end / tDay) - Math.floor(this.start.getTime() / tDay);
